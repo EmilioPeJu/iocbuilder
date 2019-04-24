@@ -6,8 +6,8 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-dls-dependency-tree = "==2.15"
-dls-edm = "==1.58"
+dls-dependency-tree = "*"
+dls-edm = "*"
 
 [requires]
 python_version = "3.7"
