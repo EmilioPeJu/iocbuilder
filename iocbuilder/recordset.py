@@ -3,10 +3,10 @@
 import os.path
 import subprocess
 
-import recordnames
-import libversion
-import support
-import paths
+from . import recordnames
+from . import libversion
+from . import support
+from . import paths
 
 
 __all__ = ['LookupRecord', 'Substitution']
@@ -34,7 +34,7 @@ class RecordSet(support.Singleton):
     # Output complete set of records to stdout.
     def Print(self):
         for line in self.__HeaderLines:
-            print line
+            print(line)
         # Print the records in alphabetical order: gives the reader a fighting
         # chance to find their way around the generated database!
         for record in sorted(self.__RecordSet.keys()):
@@ -80,7 +80,7 @@ class SubstitutionSet(support.autosuper):
     # Expand all the substitutions inline.  The path to locate the msi
     # application used for expanding must be passed in.
     def ExpandSubstitutions(self):
-        for subs_class, subList in self.__Substitutions.values():
+        for subs_class, subList in list(self.__Substitutions.values()):
             for substitution in subList:
                 substitution.ExpandSubstitution()
 
@@ -88,9 +88,9 @@ class SubstitutionSet(support.autosuper):
     def Print(self, macro_name = True):
         # Print out the list in canonical order to help with comparison
         # across minor changes.
-        for template, (subs_class, subList) in self.__Substitutions.items():
+        for template, (subs_class, subList) in list(self.__Substitutions.items()):
             if subList:
-                print
+                print()
                 if hasattr(subs_class, 'ArgInfo'):
                     lines = []
                     for x in subs_class.Arguments:
@@ -100,21 +100,21 @@ class SubstitutionSet(support.autosuper):
                     if lines:
                         format = '#  %%-%ds  %%s' % \
                             max([len(x[0]) for x in lines])
-                        print '# Macros:'
-                        print '\n'.join([format % l for l in lines])
-                print 'file %s' % template
-                print '{'
+                        print('# Macros:')
+                        print('\n'.join([format % l for l in lines]))
+                print('file %s' % template)
+                print('{')
                 subs_class._PrintPattern()
                 for substitution in subList:
                     substitution._PrintSubstitution()
-                print '}'
+                print('}')
 
     def CountSubstitutions(self):
         return len(self.__Substitutions)
 
     def AllSubstitutions(self):
         l = []
-        for template, (subs_class, subList) in self.__Substitutions.items():
+        for template, (subs_class, subList) in list(self.__Substitutions.items()):
             l += subList
         return l
 
@@ -175,7 +175,7 @@ class Substitution(libversion.ModuleBase):
     @classmethod
     def _PrintPattern(cls):
         if cls.Arguments:
-            print 'pattern {', ', '.join(cls.Arguments), '}'
+            print('pattern {', ', '.join(cls.Arguments), '}')
 
 
     ## Creates a substitution instance with the given arguments.  The
@@ -201,7 +201,7 @@ class Substitution(libversion.ModuleBase):
             assert os.access(template, os.R_OK), \
                 'Can\'t find template file "%s"' % template
         else:
-            print 'Not validating template file "%s"' % template
+            print('Not validating template file "%s"' % template)
 
         # Add ourself to the list of substitutions.
         self.args = args
@@ -213,12 +213,12 @@ class Substitution(libversion.ModuleBase):
     # be preceded by a call to _PrintPattern().
     def _PrintSubstitution(self):
         if self.Arguments:
-            print '    {', ', '.join(
+            print('    {', ', '.join(
                 [QuoteArgument(self.args[arg]) for arg in self.Arguments]), \
-                '}'
+                '}')
         else:
             # Work around msi bug if no arguments given!
-            print '    { _ }'
+            print('    { _ }')
 
     # Directly expand the substitution inline.
     def ExpandSubstitution(self):
@@ -226,13 +226,13 @@ class Substitution(libversion.ModuleBase):
                    for arg in self.Arguments]
         template = self.TemplateName(False)
 
-        print
-        print '#', 75 * '-'
-        print '# Template expansion for'
-        print '# %s' % template
-        print '#    %s' % ', '.join(argList)
-        print '#', 75 * '-'
-        print
+        print()
+        print('#', 75 * '-')
+        print('# Template expansion for')
+        print('# %s' % template)
+        print('#    %s' % ', '.join(argList))
+        print('#', 75 * '-')
+        print()
 
         if paths.msiPath:
             runMsi = os.path.join(paths.msiPath, 'msi')
@@ -241,7 +241,7 @@ class Substitution(libversion.ModuleBase):
         msi = [runMsi] + ['-M%s' % arg for arg in argList] + [template]
         p = subprocess.Popen(msi, stdout=subprocess.PIPE)
         for line in p.stdout:
-            print line,
+            print(line, end=' ')
         assert p.wait() == 0, 'Error running msi'
 
 

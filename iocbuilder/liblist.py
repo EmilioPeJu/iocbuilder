@@ -1,8 +1,8 @@
 import sys
 import os.path
 
-from support import Singleton
-import libversion
+from .support import Singleton
+from . import libversion
 
 
 # The Hardware class manages the list of libraries to be loaded and hardware
@@ -55,9 +55,9 @@ class Hardware(Singleton):
     # initialised as appropriate.
     def PrintBody(self):
         # Now load all the dependent libraries
-        print
-        print '# Loading libraries'
-        print '# -----------------'
+        print()
+        print('# Loading libraries')
+        print('# -----------------')
         for l in self.__LibraryList:
             # Generate the code to load the library.
             l._LoadLibraries()
@@ -65,9 +65,9 @@ class Hardware(Singleton):
         # Now write the individual device initialisations.
         # Initialisation is normally done in order of creation, but an
         # initialisation phase can be configured for delayed initialisation.
-        print
-        print '# Device initialisation'
-        print '# ---------------------'
+        print()
+        print('# Device initialisation')
+        print('# ---------------------')
         device_phases = {}
         for device in self.__HardwareList:
             for phase in device._InitialisationPhases:
@@ -113,7 +113,7 @@ class Hardware(Singleton):
     # Device class, which will be responsible for initialising it.
     def AddLibrary(self, library):
         if libversion.Debug:
-            print "Adding libraries from %s" %library
+            print("Adding libraries from %s" %library)
         assert library not in self.__LibraryList
         self.__LibraryList.append(library)
 

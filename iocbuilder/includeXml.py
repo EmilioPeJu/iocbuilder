@@ -1,11 +1,11 @@
 '''Xml for creating instances of templated xml files.'''
 
-from libversion import ModuleBase
-import libversion
-from autosubst import populate_class
-import support
-import dbd
-import arginfo
+from .libversion import ModuleBase
+from . import libversion
+from .autosubst import populate_class
+from . import support
+from . import dbd
+from . import arginfo
 import os
 import xml.dom.minidom
 
@@ -89,7 +89,7 @@ class Xml(ModuleBase):
         if args:
             msi_args = {}
             # mimic local variables by only passing in obs that are in args
-            for k, v in args.items():
+            for k, v in list(args.items()):
                 if getattr(self.ArgInfo.descriptions[k], 'ident', False):
                     # for idents, make msi sub $(CAM)=CAM and add CAM to list
                     # of objects
@@ -102,10 +102,10 @@ class Xml(ModuleBase):
 
         # make iocbuilder objects
         if libversion.Debug:
-            print '< Loading objects from %s >' % self.TemplateFile
+            print('< Loading objects from %s >' % self.TemplateFile)
         self.objects = instantiateXml(xml_text, obs)
         if libversion.Debug:
-            print '</ Loading objects from %s >' % self.TemplateFile
+            print('</ Loading objects from %s >' % self.TemplateFile)
 
 
 def constructArgDict(el, objects, classes, ident_lookup=True):
@@ -122,7 +122,7 @@ def constructArgDict(el, objects, classes, ident_lookup=True):
     # see if this nameKey also needs to be passed to the object constructor
     needsNameKey = nameKey in ob.ArgInfo.descriptions
     # build up the arg dict
-    for attr, value in el.attributes.items():
+    for attr, value in list(el.attributes.items()):
         attr = str(attr)
         value = str(value)
         # check if this is the name key
@@ -141,7 +141,7 @@ def constructArgDict(el, objects, classes, ident_lookup=True):
                 if value in objects:
                     value = objects[value]
                 else:
-                    print "***Warning: Can't lookup object %s" % value
+                    print("***Warning: Can't lookup object %s" % value)
         # otherwise make it the right type
         elif desc.typ == bool:
             if value and value.lower() != 'false':
@@ -168,7 +168,7 @@ def createClassLookup():
         simple = arginfo.Simple
         # construct an ArgInfo object
         argInfo = arginfo.makeArgInfo(
-            ['record'], cls.FieldInfo().keys(),
+            ['record'], list(cls.FieldInfo().keys()),
             record = simple('Record name', str),
             **cls.FieldInfo())
         class o(object):
@@ -212,5 +212,5 @@ def instantiateXml(xml_text, objects=None):
         if name is not None:
             objects[name] = inst
             if libversion.Debug:
-                print 'Setting %s = %s' %(name, inst)
+                print('Setting %s = %s' %(name, inst))
     return objects

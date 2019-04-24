@@ -2,9 +2,9 @@
 
 import string
 
-import support
-import recordnames
-import recordset
+from . import support
+from . import recordnames
+from . import recordset
 
 
 __all__ = ['PP', 'CP', 'MS', 'NP', 'ImportRecord', 'ImportName']
@@ -44,7 +44,7 @@ class Record(object):
         BuildRecord.__name__ = recordType
 
         # Perform any class extension required for this particular record type.
-        import bits
+        from . import bits
         return bits.ExtendClass(BuildRecord)
 
 
@@ -66,7 +66,7 @@ class Record(object):
     @classmethod
     def AddMetadataHook(cls, hook_cls, **hook_functions):
         cls.__MetadataHooks.append(hook_cls)
-        for name, function in hook_functions.items():
+        for name, function in list(hook_functions.items()):
             setattr(cls, name, _unbind(function))
 
 
@@ -139,7 +139,7 @@ class Record(object):
             self.__setattr('__address', address[0])
 
         # Make sure all the fields are properly processed and validated.
-        for name, value in fields.items():
+        for name, value in list(fields.items()):
             setattr(self, name, value)
 
         recordset.PublishRecord(self.name, self)
@@ -152,15 +152,15 @@ class Record(object):
     # Call to generate database description of this record.  Outputs record
     # definition in .db file format.  Hooks for meta-data can go here.
     def Print(self):
-        print
+        print()
         for hook in self.__MetadataHooks:
             hook(self)
-        print 'record(%s, "%s")' % (self._type, self.name)
-        print '{'
+        print('record(%s, "%s")' % (self._type, self.name))
+        print('{')
         # Print the fields in alphabetical order.  This is more convenient
         # to the eye and has the useful side effect of bypassing a bug
         # where DTYPE needs to be specified before INP or OUT fields.
-        keys = self.__fields.keys()
+        keys = list(self.__fields.keys())
         keys.sort()
         for k in keys:
             value = self.__fields[k]
@@ -168,10 +168,10 @@ class Record(object):
                 self.__ValidateField(k, value)
             value = str(value)
             padding = ''.ljust(4-len(k))  # To align field values
-            print '    field(%s, %s"%s")' % (k, padding, value)
+            print('    field(%s, %s"%s")' % (k, padding, value))
         for alias in sorted(list(self.__aliases)):
-            print '    alias("%s")' % alias
-        print '}'
+            print('    alias("%s")' % alias)
+        print('}')
 
 
     ## The string for a record is just its name.
@@ -287,7 +287,7 @@ class ImportRecord:
             # Brain-dead minimal validation: just check for all uppercase!
             ValidChars = set(string.ascii_uppercase + string.digits)
             if not set(fieldname) <= ValidChars:
-                raise AttributeError, 'Invalid field name %s' % fieldname
+                raise AttributeError('Invalid field name %s' % fieldname)
         return _Link(self, fieldname)
 
 

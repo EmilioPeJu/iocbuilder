@@ -2,8 +2,8 @@
 
 import os, sys
 
-from support import Singleton
-import recordnames
+from .support import Singleton
+from . import recordnames
 
 
 __all__ = [
@@ -109,11 +109,11 @@ class Configure(Singleton):
         assert not self.__called, 'Cannot call Configure more than once!'
         self.__called = True
 
-        import paths
-        import libversion
-        import iocinit
-        import recordnames
-        import iocwriter
+        from . import paths
+        from . import libversion
+        from . import iocinit
+        from . import recordnames
+        from . import iocwriter
 
         libversion.simulation_mode = simulation
 
@@ -126,9 +126,9 @@ class Configure(Singleton):
         if architecture != 'none':
             libArchPath = os.path.join(paths.EPICS_BASE, "lib", architecture)
             if not os.path.isdir(libArchPath):
-                print >> sys.stderr, '***Warning: EPICS_BASE ' \
+                print('***Warning: EPICS_BASE ' \
                     '%s not built for architecture %s' %(
-                    paths.EPICS_BASE, architecture)
+                    paths.EPICS_BASE, architecture), file=sys.stderr)
 
         self.architecture = architecture
 
@@ -177,8 +177,8 @@ class Configure(Singleton):
 #   Further symbols can be passed through to the loaded file, however this is
 #   not recommended for normal use.
 def LoadVersionFile(filename, **context):
-    from libversion import ModuleVersion
-    execfile(filename, dict(context,
+    from .libversion import ModuleVersion
+    exec(compile(open(filename).read(), filename, 'exec'), dict(context,
         ModuleVersion = ModuleVersion,
         __file__ = filename))
 
@@ -205,7 +205,7 @@ def ConfigureIOC(
         architecture = 'vxWorks-ppc604_long',
         record_names = recordnames.DiamondRecordNames,
         **kargs):
-    import iocwriter
+    from . import iocwriter
     Configure(
         record_names = record_names(),
         ioc_writer   = iocwriter.DiamondIocWriter,
@@ -229,7 +229,7 @@ def ConfigureIOC(
 #   An alternative naming convention can be specified, the default is
 #   \ref recordnames.TemplateRecordNames "TemplateRecordNames()".
 def ConfigureTemplate(record_names = None, device = None):
-    import recordnames
+    from . import recordnames
     assert device is None or record_names is None, \
         'Does not make sense to give device and record_names together'
     if record_names is None:
@@ -295,11 +295,11 @@ be run from the etc/makeIocs directory, and will create iocs/<ioc_name>''')
         options.architecture = options.simarch
     if options.doc:
         options.iocpath = options.doc
-        import iocwriter
+        from . import iocwriter
         options.ioc_writer = iocwriter.DocumentationIocWriter
     elif options.DbOnly:
         options.iocpath = os.path.abspath('.')
-        import iocwriter
+        from . import iocwriter
         options.ioc_writer = iocwriter.DbOnlyWriter
     else:
         options.ioc_writer = None
@@ -332,7 +332,7 @@ be run from the etc/makeIocs directory, and will create iocs/<ioc_name>''')
 def ParseAndConfigure(options, dependency_tree=None):
     # import iocwriter and set default iocwriter
     if options.ioc_writer is None:
-        import iocwriter
+        from . import iocwriter
         options.ioc_writer = iocwriter.DiamondIocWriter
 
     # if we have a dependency_tree class, then parse RELEASE file
@@ -359,12 +359,12 @@ def ParseAndConfigure(options, dependency_tree=None):
             options.ioc_writer.WINDOWS_RELEASE_COMMON = \
                 open(relCommon + ".Common").read()
         if options.debug:
-            print '# Release tree'
+            print('# Release tree')
             tree.print_tree()
         if 'EPICS_BASE' in tree.macros:
             options.epics_base = tree.macros['EPICS_BASE']
         if hasattr(options.ioc_writer, "macros"):
-            filt_macros = {k: v for k,v in tree.macros.items() if "#" not in k}
+            filt_macros = {k: v for k,v in list(tree.macros.items()) if "#" not in k}
             options.ioc_writer.macros.update(filt_macros)
 
     # do the relevant configure call
@@ -378,7 +378,7 @@ def ParseAndConfigure(options, dependency_tree=None):
         epics_base   = options.epics_base)
 
     # set debugging
-    import libversion
+    from . import libversion
     libversion.Debug = getattr(options, 'debug', True)
     libversion.ReportMissingModuleFiles = False
 
@@ -396,14 +396,14 @@ def ParseAndConfigure(options, dependency_tree=None):
                         leaf.path, "configure", "RELEASE")):
                 pass
             elif duplicates:
-                print '***Warning: Module "%s" defined with' % leaf.name, \
-                    'multiple versions, using "%s"' % duplicates[0].version
+                print('***Warning: Module "%s" defined with' % leaf.name, \
+                    'multiple versions, using "%s"' % duplicates[0].version)
                 if max(["R3.14.11" in x.path for x in duplicates+[leaf]]) and \
                     max(["R3.14.12.3" in x.path for x in duplicates+[leaf]]):
-                    print 'Multiple epics versions detected. Have you set your EPICS_HOST_ARCH correctly?'
+                    print('Multiple epics versions detected. Have you set your EPICS_HOST_ARCH correctly?')
             else:
                 leaves.append(leaf)
-        from libversion import ModuleVersion
+        from .libversion import ModuleVersion
         for name, version, path in [
                 (l.name, l.version, l.path) for l in leaves if l.path]:
             # if we don't have a name, it can't be a useful module

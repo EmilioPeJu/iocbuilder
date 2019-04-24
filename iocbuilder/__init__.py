@@ -22,7 +22,7 @@ in IP socket A of a carrier card in VME slot 4:
 
 '''
 
-import support
+from . import support
 
 ## Hardware module containing all exported resources.
 #

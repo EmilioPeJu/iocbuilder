@@ -51,7 +51,7 @@ class TemplateRecordNames(RecordNamesBase):
             self.__default = default
 
             # Add the description as metadata to the current record set
-            from recordset import RecordSet
+            from .recordset import RecordSet
             lines = description.split('\n')
             RecordSet.AddHeaderLine('#%% macro, %s, %s' % (name, lines[0]))
             for line in lines[1:]:

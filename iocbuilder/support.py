@@ -54,7 +54,7 @@ def SameDirFile(first_file, *filename):
 # Returns the first n elements from iter as an iterator.
 def take(iter, n):
     for i in range(n):
-        yield iter.next()
+        yield next(iter)
 
 
 # This support routine chops the given list into segments no longer than size.
@@ -64,7 +64,7 @@ def choplist(list, size):
 
 # Returns a sequence of letters.
 def countChars(start='A', stop='Z'):
-    return iter(map(chr, range(ord(start), ord(stop) + 1)))
+    return iter(map(chr, list(range(ord(start), ord(stop) + 1))))
 
 
 # Converts a string into a form suitable for interpretation by the IOC shell
@@ -133,7 +133,7 @@ class OrderedDict(dict):
 # The role of this Singleton class is a little unclear.  It can readily be
 # argued that a Singleton class is functionally identical to a module.  Very
 # true, but there are differences in syntax and perhaps in organisation.
-class Singleton(object):
+class Singleton(object, metaclass=SingletonMeta):
 
     # The SingletonMeta class is a type class for building singletons: it
     # simply converts all of the methods of the class into class bound
@@ -141,15 +141,14 @@ class Singleton(object):
     # type is stored in the class, and no instances are created.
     class SingletonMeta(type):
         def __new__(cls, name, bases, dict):
-            for n, v in dict.items():
+            for n, v in list(dict.items()):
                 if isinstance(v, types.FunctionType):
                     dict[n] = classmethod(v)
             singleton = type.__new__(cls, name, bases, dict)
             singleton.__init__()
             return singleton
 
-    __metaclass__ = SingletonMeta
-
+    
     # The __init__ method of a singleton class is called as the class is being
     # declared.
     def __init__(self):
@@ -246,16 +245,7 @@ class _autosuper_meta(type):
 #
 # All subclasses of this class share an attribute \c __super which allows
 # self.__super to be used rather than super(Class, self).
-class autosuper(object):
-    __metaclass__ = _autosuper_meta
-
-    # In Python 2.6 the API was broken in quite an uncharacteristic (though
-    # relatively harmless) fashion: object.__new__() no longer takes any
-    # arguments.  This is harmless because it merely generates a single
-    # "deprecation" warning, however this is annoying.
-    #   So long as autosuper is at the root of the inheritance hierarchy
-    # (which it should be) the trick below will work, we simply discard the
-    # unwanted arguments.
+class autosuper(object, metaclass=_autosuper_meta):
     if sys.version[0] > 2 or sys.version[1] >= 6:
         def __new__(cls, *args, **kargs):
             assert super(autosuper, cls).__init__ == object.__init__, \
@@ -283,7 +273,7 @@ def AutoRegisterClass(register, ignoreParent=True, superclass=type):
 def msi_replace_macros(d, text):
     if '$(' in text:
         args = ['msi'] + ['-M%s=%s' % (k, str(v).replace(",undefined)", ")"))
-            for k, v in d.items()]
+            for k, v in list(d.items())]
         p = subprocess.Popen(args, stdout = subprocess.PIPE,
             stdin = subprocess.PIPE)
         return p.communicate(text)[0]

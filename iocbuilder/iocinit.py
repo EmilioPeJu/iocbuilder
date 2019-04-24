@@ -27,14 +27,14 @@
 import os
 import shutil
 
-import support
-from support import autosuper, quote_c_string
-from liblist import Hardware
-from libversion import ModuleVersion
-from configure import TargetOS, Get_TargetOS, Get_TargetOS_dict, Call_TargetOS
-from configure import Architecture
-import paths
-import mydbstatic
+from . import support
+from .support import autosuper, quote_c_string
+from .liblist import Hardware
+from .libversion import ModuleVersion
+from .configure import TargetOS, Get_TargetOS, Get_TargetOS_dict, Call_TargetOS
+from .configure import Architecture
+from . import paths
+from . import mydbstatic
 
 
 
@@ -64,12 +64,12 @@ quote_IOC_string_win32 = quote_IOC_string_linux
 quote_IOC_string_windows = quote_IOC_string_linux
 
 def setenv_linux(name, value):
-    print 'epicsEnvSet "%s", %s' % (name, quote_IOC_string(value))
+    print('epicsEnvSet "%s", %s' % (name, quote_IOC_string(value)))
 setenv_win32 = setenv_linux
 setenv_windows = setenv_linux
 
 def setenv_vxWorks(name, value):
-    print 'putenv ' + quote_c_string('%s=%s' % (name, value))
+    print('putenv ' + quote_c_string('%s=%s' % (name, value)))
 
 
 ## Container for IOC initialisation functions.
@@ -120,63 +120,63 @@ class iocInit(support.Singleton):
         # set then assume that st.cmd will be started in the correct
         # target directory.
         if not self.substitute_boot:
-            print '< cdCommands'
+            print('< cdCommands')
         self.cd_home()
-        print 'tyBackspaceSet(127)'
+        print('tyBackspaceSet(127)')
 
     def PrintHeader_linux(self, ioc_root):
         if not self.substitute_boot:
-            print '< envPaths'
+            print('< envPaths')
         self.cd_home()
 
     def cd_home(self):
         if self.__TargetDir:
-            print 'cd %s' % quote_IOC_string(self.__TargetDir)
+            print('cd %s' % quote_IOC_string(self.__TargetDir))
         elif self.substitute_boot:
-            print 'cd "$(INSTALL)"'
+            print('cd "$(INSTALL)"')
         elif TargetOS() == 'vxWorks':
-            print 'cd top'
+            print('cd top')
         else:
-            print 'cd "$(TOP)"'
+            print('cd "$(TOP)"')
 
     def PrintHeader(self, ioc_root):
         # Print out all the environment settings.  Do this right away before
         # we do anything else, just in case something else we call cares.
 
         Call_TargetOS(self, 'PrintHeader', ioc_root)
-        print
-        for key, value in self.__EnvList.items():
+        print()
+        for key, value in list(self.__EnvList.items()):
             print_setenv(key, value)
-        print
+        print()
         if self.__ClockRate:
-            print 'sysClkRateSet %d' % self.__ClockRate
+            print('sysClkRateSet %d' % self.__ClockRate)
         if self.__Gateway:
-            print 'routeAdd "0", %s' % quote_IOC_string(self.__Gateway)
+            print('routeAdd "0", %s' % quote_IOC_string(self.__Gateway))
 
 
     def PrintFooter(self):
-        print
-        print '# Final ioc initialisation'
-        print '# ------------------------'
+        print()
+        print('# Final ioc initialisation')
+        print('# ------------------------')
         self.cd_home()
         for database in self.__DatabaseNameList:
-            print 'dbLoadRecords %s' % quote_IOC_string(database)
+            print('dbLoadRecords %s' % quote_IOC_string(database))
 
         if self.__IocCommands_PreInit:
-            print
-            print '# Extra IOC commands'
+            print()
+            print('# Extra IOC commands')
             for command in self.__IocCommands_PreInit:
-                print command
-            print
+                print(command)
+            print()
 
-        print 'iocInit'
+        print('iocInit')
 
         if self.__IocCommands_PostInit:
-            print
-            print '# Extra post-init IOC commands'
+            print()
+            print('# Extra post-init IOC commands')
             for command in self.__IocCommands_PostInit:
-                print command
-            print
+                print(command)
+            print()
 
 
     # Writes out a complete IOC startup script.
@@ -237,8 +237,8 @@ class iocInit(support.Singleton):
     @export
     def EpicsEnvSet(self, key, value):
         if key in self.__EnvList and value != self.__EnvList[key]:
-            print 'Changing environment variable %s from %s to %s' % (
-                key, self.__EnvList[key], value)
+            print('Changing environment variable %s from %s to %s' % (
+                key, self.__EnvList[key], value))
         self.__EnvList[key] = value
 
     ## Adds an IOC command to the startup script.
@@ -274,7 +274,7 @@ class IocDataSet(support.Singleton):
             targetDir = os.path.join(targetDir, self.__DataPath)
             if make_dirs:
                 os.makedirs(targetDir)
-            for filename, file_object in self.__DataFileList.items():
+            for filename, file_object in list(self.__DataFileList.items()):
                 file_object._CopyFile(os.path.join(targetDir, filename))
 
     def DataFileCount(self):

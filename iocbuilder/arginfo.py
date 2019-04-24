@@ -1,7 +1,7 @@
 '''Meta data argument info support.'''
 
 import inspect, sys
-from libversion import ModuleBase, ModuleVersion
+from .libversion import ModuleBase, ModuleVersion
 
 __all__ = ['makeArgInfo', 'filter_dict', 'defArgInfo']
 
@@ -37,7 +37,7 @@ class ArgInfo(object):
 
     def __init__(self, _source=None, _optional=[], _method=True, **descs):
         self.descriptions = descs
-        for k, v in descs.items():
+        for k, v in list(descs.items()):
             assert isinstance(v, ArgType), \
                 'ArgInfo description "%s" is not of valid type. Got:\n%s' % \
                     (k, v)
@@ -264,7 +264,7 @@ def Choice(desc, values, labels = None):
 # \param values List of possible values, type must be one of _simpleTypes, and
 # the same for all in the list of values
 def Enum(desc, values):
-    return Choice(desc, range(len(values)), values)
+    return Choice(desc, list(range(len(values))), values)
 
 ## A choice of identifiers of a particular type
 # \param desc Description of the argument

@@ -1,9 +1,9 @@
 '''AutoSubstitution for scanning template files.'''
 
-from libversion import ModuleBase, modules, PythonIdentifier
+from .libversion import ModuleBase, modules, PythonIdentifier
 import os, re, sys
-import recordset
-from arginfo import *
+from . import recordset
+from .arginfo import *
 
 __all__ = ['AutoSubstitution']
 
@@ -64,19 +64,17 @@ def populate_class(cls, template_file):
                 mtext, default = mtext.split('=', 1)
                 # check it's not a required value
                 if mtext in required_names + optional_names:
-                    print >> sys.stderr, \
-                    '***Warning: Redefining non-default macro "%s" to have '\
-                    'default "%s" in "%s"' % (mtext, default, template_file)
+                    print('***Warning: Redefining non-default macro "%s" to have '\
+                    'default "%s" in "%s"' % (mtext, default, template_file), file=sys.stderr)
                     required_names = [x for x in required_names if x != mtext]
                     optional_names = [x for x in optional_names if x != mtext]                    
                 if mtext in default_names:
                     # if it's a default value already, check it matches
                     old_default = default_values[default_names.index(mtext)]
                     if default != old_default: 
-                        print >> sys.stderr, \
-                        '***Warning: Cannot set macro "%s" to "%s", already '\
+                        print('***Warning: Cannot set macro "%s" to "%s", already '\
                         'defined with value "%s" in "%s"' % (mtext, default, \
-                            old_default, template_file)
+                            old_default, template_file), file=sys.stderr)
                 else:
                     # add it as a default value
                     default_names.append(mtext)
@@ -89,9 +87,8 @@ def populate_class(cls, template_file):
                 elif mtext.endswith(',recursive'):
                     mtext = mtext.replace(',recursive', '')
                 if mtext in default_names:
-                    print >> sys.stderr, \
-                    '***Warning: Cannot define non-default macro "%s", already '\
-                    'defined as default macro in "%s"' % (mtext, template_file)
+                    print('***Warning: Cannot define non-default macro "%s", already '\
+                    'defined as default macro in "%s"' % (mtext, template_file), file=sys.stderr)
                 elif line.startswith('#'):
                     # comments are optional if they are epics_parser lines
                     if epics_parser_re.match(line):
@@ -127,15 +124,13 @@ def populate_class(cls, template_file):
         elif name in required_names + default_names + optional_names:
             add_ob(name, Simple(desc))
         elif cls.WarnMacros:
-            print >> sys.stderr, \
-                '***Warning: Describing non-existent macro "%s" in "%s"' % \
-                    (name, template_file)
+            print('***Warning: Describing non-existent macro "%s" in "%s"' % \
+                    (name, template_file), file=sys.stderr)
     for name in required_names + default_names + optional_names:
         if name not in Obs:
             if cls.WarnMacros:
-                print >> sys.stderr, \
-                    '***Warning: Undescribed macro "%s" in "%s"' % \
-                    (name, template_file)
+                print('***Warning: Undescribed macro "%s" in "%s"' % \
+                    (name, template_file), file=sys.stderr)
             add_ob(name, Simple('Template argument'))
     # make sure optional_names aren't also required names
     optional_names = [x for x in optional_names if x not in required_names]
@@ -151,9 +146,9 @@ def populate_class(cls, template_file):
         cls.Arguments = required_names + default_names + optional_names
     # create Defaults
     if not hasattr(cls, 'Defaults'):
-        cls.Defaults = dict(zip(
+        cls.Defaults = dict(list(zip(
             default_names + optional_names,
-            default_values + ['' for x in optional_names]))
+            default_values + ['' for x in optional_names])))
 
     # create ArgInfo
     if not hasattr(cls, 'ArgInfo'):

@@ -10,11 +10,11 @@ the Device class defined here.'''
 import os.path
 import re
 
-from liblist import Hardware
-import libversion
-from dbd import LoadDbdFile
-from configure import Configure, Architecture
-from support import Singleton
+from .liblist import Hardware
+from . import libversion
+from .dbd import LoadDbdFile
+from .configure import Configure, Architecture
+from .support import Singleton
 
 
 # Here's what this module exports to the outside world
@@ -54,7 +54,7 @@ class _header:
         self.printed = False
     def doprint(self):
         if not self.printed:
-            print self.header
+            print(self.header)
             self.printed = True
 
 
@@ -172,11 +172,11 @@ class Device(libversion.ModuleBase):
     def _LoadLibraries(cls):
         if cls.BinFileList or Configure.dynamic_load and (
                 cls.LibFileList or cls.DbdFileList):
-            print
-            print '# %s' % cls.__name__
-            print 'cd "%s"' % cls.LibPath()
+            print()
+            print('# %s' % cls.__name__)
+            print('cd "%s"' % cls.LibPath())
             for file in cls.BinFileList:
-                print 'ld < %s' % _BinPath(file)
+                print('ld < %s' % _BinPath(file))
             if Configure.dynamic_load:
                 cls.__LoadDynamicFiles()
 
@@ -184,13 +184,13 @@ class Device(libversion.ModuleBase):
     def __LoadDynamicFiles(cls):
         # This method is only called if dynamic loading is configured.
         for lib in cls.LibFileList:
-            print 'ld < %s' % _LibPath(lib)
+            print('ld < %s' % _LibPath(lib))
         if cls.DbdFileList:
-            print 'cd "dbd"'
+            print('cd "dbd"')
             for dbd in cls.DbdFileList:
-                print 'dbLoadDatabase "%s.dbd"' % dbd
+                print('dbLoadDatabase "%s.dbd"' % dbd)
                 if Configure.register_dbd:
-                    print '%s_registerRecordDeviceDriver pdbbase' % dbd
+                    print('%s_registerRecordDeviceDriver pdbbase' % dbd)
 
 
     # The list of initialisation phases controls when initialisation will occur
@@ -251,16 +251,16 @@ class Device(libversion.ModuleBase):
         if phase == 0 and self.__Commands:
             header.doprint()
             for command in self.__Commands:
-                print command
+                print(command)
 
     # Similarly, call any post-iocInit initialisation
     def _CallPostIocInitialise(self):
         if self.PostIocInitialise or self.__CommandsPostInit:
-            print
+            print()
         if self.PostIocInitialise:
             self.PostIocInitialise()
         for command in self.__CommandsPostInit:
-            print command
+            print(command)
 
 
     def AddCommand(self, command, post_init=False):

@@ -7,9 +7,9 @@ import string
 import re
 import types
 
-import support
+from . import support
 import hardware
-import paths
+from . import paths
 
 
 __all__ = [
@@ -110,8 +110,8 @@ class ModuleVersion:
             suppress_import=False, load_path=None, override=False,
             auto_instantiate=False):
         if Debug:
-            print 'ModuleVersion(%s, version=%s, home=%s, ...) =>' % \
-                tuple(map(repr, [libname, version, home])),
+            print('ModuleVersion(%s, version=%s, home=%s, ...) =>' % \
+                tuple(map(repr, [libname, version, home])), end=' ')
 
         if home is None:
             # By default pick up each module from the prod support directory.
@@ -130,7 +130,7 @@ class ModuleVersion:
         self.use_name = use_name
 
         if Debug:
-            print repr(self.LibPath())
+            print(repr(self.LibPath()))
 
         self.__macroname = PythonIdentifier(libname.upper())
         assert self.__macroname not in self.__MacroNames, \
@@ -150,7 +150,7 @@ class ModuleVersion:
         _ModuleVersionTable[libname] = self
         self.__CreateVersionModule()
         if suppress_import:
-            print >>sys.stderr, 'Import of %s skipped' % self.__name
+            print('Import of %s skipped' % self.__name, file=sys.stderr)
         else:
             ModuleVersion._AutoInstances = []
             self.__LoadModuleDefinitions(load_path)
@@ -242,8 +242,7 @@ class ModuleVersion:
         if ModuleFile:
             self.__LoadDefinitions(ModuleFile, IsPackage)
         elif ReportMissingModuleFiles:
-            print >>sys.stderr, \
-                'Module definitions for', self.__name, 'not found'
+            print('Module definitions for', self.__name, 'not found', file=sys.stderr)
 
 
     def __LoadDefinitions(self, ModuleFile, IsPackage):
@@ -258,7 +257,7 @@ class ModuleVersion:
             self.module.__path__ = [os.path.dirname(ModuleFile)]
 
         ModuleVersion._LoadingModule.append(self)
-        execfile(ModuleFile, self.module.__dict__)
+        exec(compile(open(ModuleFile).read(), ModuleFile, 'exec'), self.module.__dict__)
         assert ModuleVersion._LoadingModule.pop() == self, \
             'Something went wrong during module loading!'
 
@@ -318,8 +317,8 @@ class ModuleBase(support.autosuper):
         cls._Instantiated = False
 
         if Debug:
-            print 'ModuleBase subclass %s.%s' % (
-                getattr(cls, 'ModuleName', 'iocbuilder'), cls.__name__)
+            print('ModuleBase subclass %s.%s' % (
+                getattr(cls, 'ModuleName', 'iocbuilder'), cls.__name__))
 
     @classmethod
     def __BindModule(cls, name, dict):
@@ -348,7 +347,7 @@ class ModuleBase(support.autosuper):
                 if 'ModuleName' in dict:
                     assert cls.ModuleName == name, \
                         'ModuleName must be %s' % name
-                    print 'Redundant ModuleName for', cls.__name__
+                    print('Redundant ModuleName for', cls.__name__)
                     assert False
                 cls.ModuleName = name
                 # During module loading, also add class to list of classes to
@@ -433,10 +432,10 @@ class ModuleBase(support.autosuper):
 
     def __new__(cls, *args, **kargs):
         if Debug:
-            print 'Instantiating %s.%s(%s)' % (
+            print('Instantiating %s.%s(%s)' % (
                 cls.ModuleName, cls.__name__, ', '.join(
-                    map(repr, args) +
-                    ['%s=%s' % (k, repr(v)) for k, v in kargs.items()]))
+                    list(map(repr, args)) +
+                    ['%s=%s' % (k, repr(v)) for k, v in list(kargs.items())])))
 
         if cls.__mark_instantiated():
             cls.UseModule()
@@ -548,7 +547,7 @@ def SetSimulation(real, sim):
                 class new_sim(sim):
                     pass
             # It is probably a function, so just call it
-            except TypeError, e:
+            except TypeError as e:
                 def new_sim(*args, **kwargs):
                     return sim(*args, **kwargs)
 
