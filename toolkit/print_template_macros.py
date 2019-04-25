@@ -61,9 +61,9 @@ Scan a template file for macros, and print the # % macro, lines for it""")
         out = sections[0] + out + "".join(l.lstrip("\n") for l in sections[1:])
         # Write it to file
         open(template_filename, "w").write(out)
-        print "Done"
+        print("Done")
     else:
-        print out
+        print(out)
 
 if __name__=="__main__":
     print_template_macros()

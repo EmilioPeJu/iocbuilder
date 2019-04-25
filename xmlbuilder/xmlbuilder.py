@@ -1,5 +1,5 @@
 #!/bin/env dls-python
-from xmlstore import Store
+from .xmlstore import Store
 import sys, os
 from subprocess import *
 from optparse import OptionParser
@@ -61,7 +61,7 @@ def main():
     xml_file = args[0]
     store = Store(debug = debug, DbOnly = DbOnly, doc = options.doc)
     if options.debug:
-        print '--- Parsing %s ---' % xml_file
+        print('--- Parsing %s ---' % xml_file)
     
     # read the xml text for the architecture
     xml_text = open(xml_file).read()
@@ -100,11 +100,11 @@ def main():
     if store.architecture == "win32-x86":
         substitute_boot = False
     if debug:
-        print "Writing ioc to %s" % iocpath
+        print("Writing ioc to %s" % iocpath)
     store.iocbuilder.WriteNamedIoc(iocpath, store.iocname, check_release = not options.no_check_release,
         substitute_boot = substitute_boot, edm_screen = options.edm_screen)
     if debug:
-        print "Done"
+        print("Done")
 
 if __name__=='__main__':
     # Pick up containing IOC builder

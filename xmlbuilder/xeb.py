@@ -7,7 +7,7 @@ from PyQt4.QtGui import \
     QClipboard, QDialog, QScrollArea, QTextEdit, QFont, QPushButton, QLabel, \
     QToolTip, QIcon
 from PyQt4.QtCore import Qt, SIGNAL, SLOT, QSize, QVariant, QString, QEvent, QPoint
-from delegates import ComboBoxDelegate
+from .delegates import ComboBoxDelegate
 import sys, signal, os, re, traceback
 from optparse import OptionParser
 
@@ -293,7 +293,7 @@ class GUI(QMainWindow):
         # initialise filename
         self.filename = None        
         # make the data store
-        from xmlstore import Store
+        from .xmlstore import Store
         self.store = Store(debug = debug)
         # view the current table
         self.tableView = TableView(self)
@@ -424,7 +424,7 @@ class GUI(QMainWindow):
                     'The following warnings were generated:\n' + \
                     '\n'.join(warnings)
                 QMessageBox.warning(self,'Open Warnings',errorstr)
-        except Exception, e:
+        except Exception as e:
             x = formLog('An error ocurred. Make sure all the modules listed '
                 'in RELEASE files are built. Check the text below for '
                 'details:\n\n' + traceback.format_exc(), self)
@@ -453,14 +453,14 @@ class GUI(QMainWindow):
             self.listView.insertItem(row, item)
 
     def New(self, filename = ''):
-        print "**", filename
+        print("**", filename)
         # make sure the user is sure if there are unsaved changes
         if self.__prompt_unsaved() == QMessageBox.Cancel:
             return
         # tell the store to create a new set of tables
         try:
             self.store.New(filename)
-        except Exception, e:
+        except Exception as e:
             x = formLog('An error ocurred. Make sure all the modules listed '
                 'in RELEASE files are built. Check the text below for '
                 'details:\n\n' + traceback.format_exc(), self)
@@ -624,7 +624,7 @@ class pythonCode(formLog):
             try:
                 exec(code, env)
             except:
-                print "Failed"
+                print("Failed")
             else:
                 if env["text"] != text:
                     index = model.index(cell.row(), cell.column())

@@ -1,6 +1,6 @@
 from PyQt4.QtGui import QUndoGroup
 from PyQt4.QtCore import Qt, QString, SIGNAL
-from xmltable import Table
+from .xmltable import Table
 import xml.dom.minidom, sys, os, traceback, time
 
 class Store(object):
@@ -30,7 +30,7 @@ class Store(object):
     def setStored(self):
         self._storedarchitecture = self.architecture
         self._stored_tableNames = self._tableNames[:]
-        for table in self._tables.values():
+        for table in list(self._tables.values()):
             table.stack.setClean()
 
     def isClean(self):
@@ -58,8 +58,8 @@ class Store(object):
         else:
             self.build_root = os.getcwd()
         if self.debug:
-            print "IOC name: %s" % self.iocname
-            print "Build root: %s" % self.build_root
+            print("IOC name: %s" % self.iocname)
+            print("Build root: %s" % self.build_root)
         # First clear up the undo stack
         for stack in self.stack.stacks():
             self.stack.removeStack(stack)
@@ -76,9 +76,9 @@ class Store(object):
         # now do the import and configure of iocbuilder
         import iocbuilder
         if self.debug:
-            print '# Creating IOC with Architecture %s' % (self.architecture)
+            print('# Creating IOC with Architecture %s' % (self.architecture))
             if self.simarch:
-                print '# Simulation mode'
+                print('# Simulation mode')
         self.iocbuilder = iocbuilder
         self.ioc_writer = None
         if self.DbOnly:
@@ -91,13 +91,13 @@ class Store(object):
         # create AutoSubstitutions and moduleObjects
         for v in vs:
             if self.debug:
-                print 'Making auto objects from %s' % v.LibPath()
+                print('Making auto objects from %s' % v.LibPath())
             iocbuilder.AutoSubstitution.fromModuleVersion(v)
             iocbuilder.Xml.fromModuleVersion(v)
         # create our dict of classes
         classes = iocbuilder.includeXml.createClassLookup()
         # now we can make our tables
-        for name, o in classes.items():
+        for name, o in list(classes.items()):
             # make a table object
             table = Table(o, self)
             # add it to our internal dict of tables
@@ -115,7 +115,7 @@ class Store(object):
 
     def Open(self, filename, sim = None):
         if self.debug:
-            print '--- Parsing %s ---'%filename
+            print('--- Parsing %s ---'%filename)
         # read the tables
         xml_root = xml.dom.minidom.parse(filename)
         # find the root node
@@ -153,9 +153,9 @@ class Store(object):
             for node in nodes:
                 # find the correct table
                 obname = str(node.nodeName)
-                if self._tables.has_key(obname):
+                if obname in self._tables:
                     pass
-                elif self._tables.has_key(obname.replace("auto_", "")):
+                elif obname.replace("auto_", "") in self._tables:
                     node.nodeName = obname.replace("auto_", "")
                     obname = str(node.nodeName)
                 else:

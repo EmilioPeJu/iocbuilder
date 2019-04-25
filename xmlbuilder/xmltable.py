@@ -2,7 +2,7 @@ from PyQt4.QtGui import QUndoStack, QUndoCommand, QColor
 from PyQt4.QtCore import QStringList, Qt, QAbstractTableModel, QMimeData, \
     QVariant, SIGNAL, QString, QModelIndex
 import re, time, types
-from commands import ChangeValueCommand, RowCommand
+from .commands import ChangeValueCommand, RowCommand
 
 class Table(QAbstractTableModel):
 
@@ -146,7 +146,7 @@ class Table(QAbstractTableModel):
             row[0] = QVariant(True)
         else:
             row[0] = QVariant(False)
-        for attr, value in node.attributes.items():
+        for attr, value in list(node.attributes.items()):
             attr = str(attr)
             value = str(value)
             index = -1
@@ -219,7 +219,7 @@ class Table(QAbstractTableModel):
     def removeRows(self, row, count, parent = QModelIndex()):
         if count > 1:
             self.stack.beginMacro('Remove rows %d..%d'%(row+1, row+count))
-        for row in reversed(range(row, row+count)):
+        for row in reversed(list(range(row, row+count))):
             self.stack.push(RowCommand(row, self, parent, False))
         if count > 1:
             self.stack.endMacro()
@@ -255,8 +255,8 @@ class Table(QAbstractTableModel):
         for name in self._parent.getTableNames():
             table = self._parent._tables[name]
             # if we have a filter, then make sure this table is a subclass of it
-            if filt is not None and type(filt) == types.ClassType and \
-                    type(table.ob) == types.ClassType and \
+            if filt is not None and type(filt) == type and \
+                    type(table.ob) == type and \
                     not issubclass(table.ob, filt):
                 # if we are only going up to a certain table and this is it
                 if table == self and upto is not None:
