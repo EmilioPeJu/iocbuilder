@@ -54,7 +54,7 @@ class _header:
         self.printed = False
     def doprint(self):
         if not self.printed:
-            print(self.header)
+            print((self.header))
             self.printed = True
 
 
@@ -173,10 +173,10 @@ class Device(libversion.ModuleBase):
         if cls.BinFileList or Configure.dynamic_load and (
                 cls.LibFileList or cls.DbdFileList):
             print()
-            print('# %s' % cls.__name__)
-            print('cd "%s"' % cls.LibPath())
+            print(('# %s' % cls.__name__))
+            print(('cd "%s"' % cls.LibPath()))
             for file in cls.BinFileList:
-                print('ld < %s' % _BinPath(file))
+                print(('ld < %s' % _BinPath(file)))
             if Configure.dynamic_load:
                 cls.__LoadDynamicFiles()
 
@@ -184,13 +184,13 @@ class Device(libversion.ModuleBase):
     def __LoadDynamicFiles(cls):
         # This method is only called if dynamic loading is configured.
         for lib in cls.LibFileList:
-            print('ld < %s' % _LibPath(lib))
+            print(('ld < %s' % _LibPath(lib)))
         if cls.DbdFileList:
             print('cd "dbd"')
             for dbd in cls.DbdFileList:
-                print('dbLoadDatabase "%s.dbd"' % dbd)
+                print(('dbLoadDatabase "%s.dbd"' % dbd))
                 if Configure.register_dbd:
-                    print('%s_registerRecordDeviceDriver pdbbase' % dbd)
+                    print(('%s_registerRecordDeviceDriver pdbbase' % dbd))
 
 
     # The list of initialisation phases controls when initialisation will occur

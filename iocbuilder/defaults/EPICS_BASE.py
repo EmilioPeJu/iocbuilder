@@ -16,16 +16,16 @@ class epicsBase(Device):
         self.ioc_init = ioc_init
 
     def Initialise_vxWorks(self):
-        print('ld < bin/%s/%s.munch' % (
-            configure.Architecture(), self.ioc_init.ioc_name))
+        print(('ld < bin/%s/%s.munch' % (
+            configure.Architecture(), self.ioc_init.ioc_name)))
 
     def Initialise_FIRST(self):
         self.ioc_init.cd_home()
         configure.Call_TargetOS(self, 'Initialise')
         print()
-        print('dbLoadDatabase "dbd/%s.dbd"' % self.ioc_init.ioc_name)
-        print('%s_registerRecordDeviceDriver(pdbbase)'% \
-            self.ioc_init.ioc_name.replace('-', '_'))
+        print(('dbLoadDatabase "dbd/%s.dbd"' % self.ioc_init.ioc_name))
+        print(('%s_registerRecordDeviceDriver(pdbbase)'% \
+            self.ioc_init.ioc_name.replace('-', '_')))
 
 
 class StartupCommand(Device):
@@ -43,7 +43,7 @@ class StartupCommand(Device):
                 self.Initialise = self.__print_command
 
     def __print_command(self):
-        print(self.command)
+        print((self.command))
 
     ArgInfo = makeArgInfo(__init__,
         command   = Simple('Startup command', str),
@@ -92,9 +92,9 @@ class IpAttach(Device):
         self.port = port
 
     def Initialise(self):
-        print('ipAttach(%(port)d, "%(device)s")' % self.__dict__)
-        print('ifMaskSet("%(device)s%(port)d", 0x%(mask)08x)' % self.__dict__)
-        print('ifAddrSet("%(device)s%(port)d", "%(address)s")' % self.__dict__)
+        print(('ipAttach(%(port)d, "%(device)s")' % self.__dict__))
+        print(('ifMaskSet("%(device)s%(port)d", 0x%(mask)08x)' % self.__dict__))
+        print(('ifAddrSet("%(device)s%(port)d", "%(address)s")' % self.__dict__))
 
     ArgInfo = makeArgInfo(__init__,
         address = Simple('IP address to bind to secondary network'),
@@ -112,7 +112,7 @@ class hostAdd(Device):
         self.address = address
 
     def Initialise(self):
-        print('hostAdd("%(host)s", "%(address)s")' % self.__dict__)
+        print(('hostAdd("%(host)s", "%(address)s")' % self.__dict__))
 
     ArgInfo = makeArgInfo(__init__,
         host = Simple("Host name to be bound to given address"),
@@ -131,7 +131,7 @@ class system(Device):
         self.command = command
 
     def PostIocInitialise(self):
-        print('system %s' % quote_c_string(self.command))
+        print(('system %s' % quote_c_string(self.command)))
         
     ArgInfo = makeArgInfo(__init__,
         command = Simple("Command to be run post IOC init"))

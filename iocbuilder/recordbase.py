@@ -155,7 +155,7 @@ class Record(object):
         print()
         for hook in self.__MetadataHooks:
             hook(self)
-        print('record(%s, "%s")' % (self._type, self.name))
+        print(('record(%s, "%s")' % (self._type, self.name)))
         print('{')
         # Print the fields in alphabetical order.  This is more convenient
         # to the eye and has the useful side effect of bypassing a bug
@@ -168,9 +168,9 @@ class Record(object):
                 self.__ValidateField(k, value)
             value = str(value)
             padding = ''.ljust(4-len(k))  # To align field values
-            print('    field(%s, %s"%s")' % (k, padding, value))
+            print(('    field(%s, %s"%s")' % (k, padding, value)))
         for alias in sorted(list(self.__aliases)):
-            print('    alias("%s")' % alias)
+            print(('    alias("%s")' % alias))
         print('}')
 
 

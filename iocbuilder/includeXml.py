@@ -102,10 +102,10 @@ class Xml(ModuleBase):
 
         # make iocbuilder objects
         if libversion.Debug:
-            print('< Loading objects from %s >' % self.TemplateFile)
+            print(('< Loading objects from %s >' % self.TemplateFile))
         self.objects = instantiateXml(xml_text, obs)
         if libversion.Debug:
-            print('</ Loading objects from %s >' % self.TemplateFile)
+            print(('</ Loading objects from %s >' % self.TemplateFile))
 
 
 def constructArgDict(el, objects, classes, ident_lookup=True):
@@ -141,7 +141,7 @@ def constructArgDict(el, objects, classes, ident_lookup=True):
                 if value in objects:
                     value = objects[value]
                 else:
-                    print("***Warning: Can't lookup object %s" % value)
+                    print(("***Warning: Can't lookup object %s" % value))
         # otherwise make it the right type
         elif desc.typ == bool:
             if value and value.lower() != 'false':
@@ -212,5 +212,5 @@ def instantiateXml(xml_text, objects=None):
         if name is not None:
             objects[name] = inst
             if libversion.Debug:
-                print('Setting %s = %s' %(name, inst))
+                print(('Setting %s = %s' %(name, inst)))
     return objects

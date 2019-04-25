@@ -113,7 +113,7 @@ class Hardware(Singleton):
     # Device class, which will be responsible for initialising it.
     def AddLibrary(self, library):
         if libversion.Debug:
-            print("Adding libraries from %s" %library)
+            print(("Adding libraries from %s" %library))
         assert library not in self.__LibraryList
         self.__LibraryList.append(library)
 

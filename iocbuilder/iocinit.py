@@ -64,12 +64,12 @@ quote_IOC_string_win32 = quote_IOC_string_linux
 quote_IOC_string_windows = quote_IOC_string_linux
 
 def setenv_linux(name, value):
-    print('epicsEnvSet "%s", %s' % (name, quote_IOC_string(value)))
+    print(('epicsEnvSet "%s", %s' % (name, quote_IOC_string(value))))
 setenv_win32 = setenv_linux
 setenv_windows = setenv_linux
 
 def setenv_vxWorks(name, value):
-    print('putenv ' + quote_c_string('%s=%s' % (name, value)))
+    print(('putenv ' + quote_c_string('%s=%s' % (name, value))))
 
 
 ## Container for IOC initialisation functions.
@@ -131,7 +131,7 @@ class iocInit(support.Singleton):
 
     def cd_home(self):
         if self.__TargetDir:
-            print('cd %s' % quote_IOC_string(self.__TargetDir))
+            print(('cd %s' % quote_IOC_string(self.__TargetDir)))
         elif self.substitute_boot:
             print('cd "$(INSTALL)"')
         elif TargetOS() == 'vxWorks':
@@ -149,9 +149,9 @@ class iocInit(support.Singleton):
             print_setenv(key, value)
         print()
         if self.__ClockRate:
-            print('sysClkRateSet %d' % self.__ClockRate)
+            print(('sysClkRateSet %d' % self.__ClockRate))
         if self.__Gateway:
-            print('routeAdd "0", %s' % quote_IOC_string(self.__Gateway))
+            print(('routeAdd "0", %s' % quote_IOC_string(self.__Gateway)))
 
 
     def PrintFooter(self):
@@ -160,7 +160,7 @@ class iocInit(support.Singleton):
         print('# ------------------------')
         self.cd_home()
         for database in self.__DatabaseNameList:
-            print('dbLoadRecords %s' % quote_IOC_string(database))
+            print(('dbLoadRecords %s' % quote_IOC_string(database)))
 
         if self.__IocCommands_PreInit:
             print()
@@ -237,8 +237,8 @@ class iocInit(support.Singleton):
     @export
     def EpicsEnvSet(self, key, value):
         if key in self.__EnvList and value != self.__EnvList[key]:
-            print('Changing environment variable %s from %s to %s' % (
-                key, self.__EnvList[key], value))
+            print(('Changing environment variable %s from %s to %s' % (
+                key, self.__EnvList[key], value)))
         self.__EnvList[key] = value
 
     ## Adds an IOC command to the startup script.
