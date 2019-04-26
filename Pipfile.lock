@@ -30,12 +30,14 @@
         },
         "certifi": {
             "hashes": [
-                "sha256:59b7658e26ca9c7339e00f8f4636cdfe59d34fa37b9b04f6f9e9926b3cece1a5"
+                "sha256:59b7658e26ca9c7339e00f8f4636cdfe59d34fa37b9b04f6f9e9926b3cece1a5",
+                "sha256:b26104d6835d1f5e49452a26eb2ff87fe7090b89dfcaee5ea2212697e1e1d7ae"
             ],
             "version": "==2019.3.9"
         },
         "chardet": {
             "hashes": [
+                "sha256:84ab92ed1c4d4f16916e05906b6b75a6c0fb5db821cc65e70cbd64a3e2a5eaae",
                 "sha256:fc323ffcaeaed0e0a02bf4d117757b98aed530d9ed4531e3e15460124c106691"
             ],
             "version": "==3.0.4"
@@ -48,26 +50,27 @@
         },
         "cookiecutter": {
             "hashes": [
+                "sha256:1316a52e1c1f08db0c9efbf7d876dbc01463a74b155a0d83e722be88beda9a3e",
                 "sha256:ed8f54a8fc79b6864020d773ce11539b5f08e4617f353de1f22d23226f6a0d36"
             ],
             "version": "==1.6.0"
         },
         "dls-ade": {
             "hashes": [
-                "sha256:58b6cb7234dcf42d5c990a8eeaab2524857d2fd94b7f1c27e8b73fcceda932cd"
+                "sha256:a5c92ea1071ca9bf4c57891697a958a13a118badb784f08973e00727b78ae350"
             ],
-            "version": "==0.16"
+            "version": "==0.19"
         },
         "dls-dependency-tree": {
             "hashes": [
-                "sha256:bd8c9f69cc4b2a85f1c396aa8e7106c611733d4f48eea35a4e00f4e43c027544"
+                "sha256:bc10cc84fd8ee488cb380bfef65111707f08d2298e600cd81dcafc98f6570258"
             ],
             "index": "pypi",
-            "version": "==2.15"
+            "version": "==2.17"
         },
         "dls-edm": {
             "hashes": [
-                "sha256:9dc87a1251f888ffa93bdab91bf2770380c8a8d79ac89d0a52e41c6746a77322"
+                "sha256:21828e20fef9de89542e46c566a1a60d8f84cb256da768e43ff93ba6fdd81ee0"
             ],
             "index": "pypi",
             "version": "==1.58"
@@ -122,7 +125,7 @@
         },
         "pipfile": {
             "hashes": [
-                "sha256:f7d9f15de8b660986557eb3cc5391aa1a16207ac41bc378d03f414762d36c984"
+                "sha256:914d1d2884dc0556807477f03602a6f33c971a4c757f46bd5bef5352a73f96a0"
             ],
             "version": "==0.0.2"
         },
