@@ -21,7 +21,7 @@ __all__ = ['Singleton', 'AutoRegisterClass', 'SameDirFile', 'quote_c_string']
 def ExportModules(globals, *modulenames):
     names = []
     for modulename in modulenames:
-        module = __import__(modulename, globals, locals(), [])
+        module = import_module(f"iocbuilder.{modulename}")
         if hasattr(module, '__all__'):
             for name in module.__all__:
                 globals[name] = getattr(module, name)
