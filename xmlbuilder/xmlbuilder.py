@@ -1,9 +1,10 @@
 #!/bin/env dls-python
 from .xmlstore import Store
-import sys, os
+import sys, os, shutil, glob
 from subprocess import *
 from optparse import OptionParser
 import xml.dom.minidom
+
 
 # hacky hacky change linux-x86 to linux-x86_64 in RHEL6
 def patch_arch(arch):
@@ -11,7 +12,8 @@ def patch_arch(arch):
     if lsb_release == "6" and arch == "linux-x86":
         arch = "linux-x86_64"
     return arch
-    
+
+
 def main():
     parser = OptionParser('usage: %prog [options] <xml-file>')
     parser.add_option(
@@ -39,6 +41,9 @@ def main():
         '-b', action='store_true', dest='no_substitute_boot',
         help='Don\'t substitute .src file to make a .boot file, copy it and '\
         ' create an envPaths file to load')
+    parser.add_option(
+        '--build-debug', action='store_true', dest='build_debug',
+        help='Enable debug build of IOC')
 
     # parse arguments
     (options, args) = parser.parse_args()
@@ -62,7 +67,7 @@ def main():
     store = Store(debug = debug, DbOnly = DbOnly, doc = options.doc)
     if options.debug:
         print('--- Parsing %s ---' % xml_file)
-    
+
     # read the xml text for the architecture
     xml_text = open(xml_file).read()
     xml_root = xml.dom.minidom.parseString(xml_text)
@@ -74,7 +79,7 @@ def main():
     else:
         store.architecture = patch_arch(str(components.attributes['arch'].value))
         store.simarch = None
-    
+
     # Now create a new store, loading the release file from this xml file
     store.New(xml_file)
     store.iocbuilder.SetSource(os.path.realpath(xml_file))
@@ -102,9 +107,54 @@ def main():
     if debug:
         print("Writing ioc to %s" % iocpath)
     store.iocbuilder.WriteNamedIoc(iocpath, store.iocname, check_release = not options.no_check_release,
-        substitute_boot = substitute_boot, edm_screen = options.edm_screen)
+        substitute_boot = substitute_boot, edm_screen = options.edm_screen, build_debug = options.build_debug)
     if debug:
         print("Done")
+
+    # Check for README in same directory as source XML
+    check_for_readme(xml_file, iocpath, store.iocname, debug)
+
+
+def readme_exists(xml_file, iocname, debug):
+    readme_pattern = xml_file.replace(".xml", "_README*")
+    readme_paths = glob.glob(readme_pattern)
+    if len(readme_paths) > 0:
+        # Return only the first match
+        if debug:
+            print("Found README at {path}".format(path=readme_paths[0]))
+        return readme_paths[0]
+    else:
+        if debug:
+            print("No README found")
+        return None
+
+
+def get_source_readme_filename(source_readme_path):
+    split_path = source_readme_path.split("/")
+    return split_path[-1]
+
+
+def get_destination_readme_filename(source_readme_path):
+    readme_filename = get_source_readme_filename(source_readme_path)
+    extension_pos = readme_filename.find(".")
+    destination_filename = "README"
+    if extension_pos != -1:
+        destination_filename += readme_filename[extension_pos:]
+    return destination_filename
+
+
+def check_for_readme(xml_file, iocpath, iocname, debug):
+    # Check for README
+    source_readme_path = readme_exists(xml_file, iocname, debug)
+    if source_readme_path is not None:
+        readme_filename = get_destination_readme_filename(source_readme_path)
+        destination_readme_path = "{iocpath}/{filename}".format(
+            iocpath=iocpath,
+            filename=readme_filename)
+        if debug:
+            print("Copying README to {0}".format(destination_readme_path))
+        shutil.copyfile(source_readme_path, destination_readme_path)
+
 
 if __name__=='__main__':
     # Pick up containing IOC builder
