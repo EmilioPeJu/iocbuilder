@@ -151,7 +151,6 @@ class SingletonMeta(type):
 # true, but there are differences in syntax and perhaps in organisation.
 class Singleton(object, metaclass=SingletonMeta):
 
-    
     # The __init__ method of a singleton class is called as the class is being
     # declared.
     def __init__(self):
@@ -249,7 +248,7 @@ class _autosuper_meta(type):
 # All subclasses of this class share an attribute \c __super which allows
 # self.__super to be used rather than super(Class, self).
 class autosuper(object, metaclass=_autosuper_meta):
-    if sys.version[0] > 2 or sys.version[1] >= 6:
+    if sys.version_info.major > 2 or sys.version_info.minor >= 6:
         def __new__(cls, *args, **kargs):
             assert super(autosuper, cls).__init__ == object.__init__, \
                 'Broken inheritance hierarchy?'
