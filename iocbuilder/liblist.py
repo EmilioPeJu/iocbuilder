@@ -1,8 +1,8 @@
 import sys
 import os.path
 
-from .support import Singleton
-from . import libversion
+from iocbuilder import libversion
+from iocbuilder.support import Singleton
 
 
 # The Hardware class manages the list of libraries to be loaded and hardware

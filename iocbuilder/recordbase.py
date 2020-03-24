@@ -2,9 +2,7 @@
 
 import string
 
-from . import support
-from . import recordnames
-from . import recordset
+from iocbuilder import recordnames, recordset, support
 
 
 __all__ = ['PP', 'CP', 'MS', 'NP', 'ImportRecord', 'ImportName']

@@ -1,12 +1,15 @@
 '''A miscellaneous collection of fairly generic utilities.'''
-
-import itertools
-import os, os.path
-import sys
 import fnmatch
-import types
+import itertools
+import os
+import os.path
 import re
 import subprocess
+import sys
+import types
+
+from importlib import import_module
+
 
 __all__ = ['Singleton', 'AutoRegisterClass', 'SameDirFile', 'quote_c_string']
 

@@ -1,15 +1,22 @@
 #!/bin/env dls-python2.7
 
-from PyQt4.QtGui import \
-    QMainWindow, QMessageBox, QApplication, QTableView, \
-    QGridLayout, QListWidget, QDockWidget, QAbstractItemView, QUndoView, \
-    QMenu, QFileDialog, QInputDialog, QLineEdit, QListWidgetItem, \
-    QClipboard, QDialog, QScrollArea, QTextEdit, QFont, QPushButton, QLabel, \
-    QToolTip, QIcon
+import os
+import re
+import sys
+import signal
+import traceback
+
+from PyQt4.QtGui import (
+    QMainWindow, QMessageBox, QApplication, QTableView,
+    QGridLayout, QListWidget, QDockWidget, QAbstractItemView, QUndoView,
+    QMenu, QFileDialog, QInputDialog, QLineEdit, QListWidgetItem,
+    QClipboard, QDialog, QScrollArea, QTextEdit, QFont, QPushButton, QLabel,
+    QToolTip, QIcon)
 from PyQt4.QtCore import Qt, SIGNAL, SLOT, QSize, QVariant, QString, QEvent, QPoint
-from .delegates import ComboBoxDelegate
-import sys, signal, os, re, traceback
 from optparse import OptionParser
+
+from iocbuilder.xmlbuilder.delegates import ComboBoxDelegate
+
 
 class TooltipMenu(QMenu):
     def event(self, e):
@@ -61,7 +68,7 @@ class TableView(QTableView):
         # insert escapes
         for row in data:
             for i, val in enumerate(row):
-                row[i] = val.replace("\n", "\\n").replace("\t", "\\t")                
+                row[i] = val.replace("\n", "\\n").replace("\t", "\\t")
         rows = ['\t'.join(row) for row in data]
         cb = app.clipboard()
         cb.setText(QString('\n'.join(rows)))
@@ -76,7 +83,7 @@ class TableView(QTableView):
     def subText(self, srcText, number):
         """Increment the last number (with no - signs) in srcText by number"""
         # find the last positive int in the string
-        match = re.search("[^\d]*(\d+)[^\d]*$", srcText)        
+        match = re.search("[^\d]*(\d+)[^\d]*$", srcText)
         # if we found a number
         if match:
             text  = srcText[:match.start(1)]
@@ -84,7 +91,7 @@ class TableView(QTableView):
             text += fstr % (int(srcText[match.start(1):match.end(1)]) + number)
             text += srcText[match.end(1):]
         else:
-            text = srcText        
+            text = srcText
         return text
 
     def fillCells(self, inc=False):
@@ -109,7 +116,7 @@ class TableView(QTableView):
             cells = [x for x in selRange if x != source]
             srcText = str(source.data().toString())
             # Fill cells across
-            for cell in cells:                
+            for cell in cells:
                 if inc:
                     text = self.subText(srcText, cell.column() - mincols)
                 else:
@@ -231,7 +238,7 @@ class ListView(QListWidget):
         items = self.findItems(text, Qt.MatchExactly)
         if items:
             self.setCurrentItem(items[0])
-        self.parent().parent().populate(name = str(items[0].text()))        
+        self.parent().parent().populate(name = str(items[0].text()))
 
     def writeNames(self):
         # write the current list of names to the store
@@ -267,12 +274,12 @@ class ListView(QListWidget):
 
     def moveTable(self, offset):
         text = self.currentItem().text()
-        row = self.currentRow()        
+        row = self.currentRow()
         # move the current table to index+offset
         if row + offset < 0 or row + offset >= self.count():
             return
         # remove the item
-        self.takeItem(row)     
+        self.takeItem(row)
         # Insert the new item at the correct place
         self.insertItem(row + offset, text)
         # write the current list of names to the store
@@ -291,7 +298,7 @@ class GUI(QMainWindow):
     def __init__(self, debug=False):
         QMainWindow.__init__(self)
         # initialise filename
-        self.filename = None        
+        self.filename = None
         # make the data store
         from .xmlstore import Store
         self.store = Store(debug = debug)
@@ -300,10 +307,10 @@ class GUI(QMainWindow):
         #self.tableView.setDragEnabled(True);
         #self.tableView.setDragDropMode(QAbstractItemView.InternalMove)
         #self.tableView.setAcceptDrops(True);
-        #self.tableView.setDropIndicatorShown(True);        
+        #self.tableView.setDropIndicatorShown(True);
         self.tableView.verticalHeader().sectionMoved.connect(self.sectionMoved)
         self.tableView.verticalHeader().setMovable(True)
-        
+
         self.setCentralWidget(self.tableView)
         # add a custom delegate to it
         self.delegate = ComboBoxDelegate()
@@ -480,7 +487,7 @@ class GUI(QMainWindow):
         if self.__prompt_unsaved() == QMessageBox.Cancel:
             if event:
                 event.ignore()
-        else:        
+        else:
             if event:
                 event.accept()
             else:
@@ -501,7 +508,7 @@ class GUI(QMainWindow):
         self.menuComponents.clear()
         self.menuComponents.addAction('Remove Table', self.listView.removeTable)
         self.menuComponents.addAction('Move Table Up', self.listView.moveTableUp)
-        self.menuComponents.addAction('Move Table Down', self.listView.moveTableDown)                        
+        self.menuComponents.addAction('Move Table Down', self.listView.moveTableDown)
         self.menuComponents.addSeparator()
         modules = {}
         self.functions = []
@@ -533,7 +540,7 @@ class GUI(QMainWindow):
     def populate(self, index = None, name = None):
         # first store the state of the current view
         if getattr(self, "tablename", None) in self.store.getTableNames():
-            topLeftIndex = self.tableView.indexAt(QPoint(0,0)) 
+            topLeftIndex = self.tableView.indexAt(QPoint(0,0))
             self.store.getTable(self.tablename).topLeftIndex = topLeftIndex
         if index is not None:
             name = str(index.data().toString())

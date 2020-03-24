@@ -1,21 +1,18 @@
 '''The IOC writers defined here are designed to be passed to the library
 Configure call as an 'iocwriter' argument.'''
 
-import sys, time, textwrap
-import os, os.path
-import shutil
-import types
 import fnmatch
+import os
+import os.path
+import shutil
+import sys
+import time
+import textwrap
+import types
 
-from . import iocinit
-from . import recordset
-from . import configure
-from . import libversion
-import hardware
-from . import paths
-from . import support
+from iocbuilder import configure, iocinit, libversion, paths, recordset, support
+from iocbuilder.liblist import Hardware
 
-from .liblist import Hardware
 
 __all__ = ['IocWriter', 'SimpleIocWriter', 'DiamondIocWriter', 'SetSource',
     'DocumentationIocWriter', 'DbOnlyWriter']
@@ -879,7 +876,7 @@ EPICS_BASE = %(EPICS_BASE)s
             pre_command_string = "\n".join(pre_commands)
 
         self.WriteFile((self.iocBootDir, 'st%s.sh' % ioc),
-            self.LINUX_CMD % dict(ioc=ioc, env=environment, 
+            self.LINUX_CMD % dict(ioc=ioc, env=environment,
                                   pre=pre_command_string),
             header = PrintDisclaimerCommand('/bin/sh'))
         if not self.substitute_boot:

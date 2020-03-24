@@ -2,7 +2,7 @@ from PyQt4.QtGui import QUndoStack, QUndoCommand, QColor
 from PyQt4.QtCore import QStringList, Qt, QAbstractTableModel, QMimeData, \
     QVariant, SIGNAL, QString, QModelIndex
 import re, time, types
-from .commands import ChangeValueCommand, RowCommand
+from iocbuilder.xmlbuilder.commands import ChangeValueCommand, RowCommand
 
 class Table(QAbstractTableModel):
 
@@ -233,7 +233,7 @@ class Table(QAbstractTableModel):
         olddata = [QVariant(x) for x in self.rows[oldVisualIndex]]
         # delete the old row
         self.stack.push(RowCommand(oldVisualIndex, self, parent, False))
-        # create a command to make a new row with the old data        
+        # create a command to make a new row with the old data
         cmd = RowCommand(newVisualIndex, self, parent)
         cmd.rowdata = olddata
         self.stack.push(cmd)

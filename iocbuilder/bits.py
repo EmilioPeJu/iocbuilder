@@ -1,4 +1,4 @@
-from .dbd import records
+from iocbuilder.dbd import records
 
 
 # Extend the automatically generated mbbiDirect and mbboDirect classes

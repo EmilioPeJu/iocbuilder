@@ -1,9 +1,14 @@
 #!/bin/env dls-python
-from .xmlstore import Store
-import sys, os, shutil, glob
+import glob
+import os
+import sys
+import shutil
+import xml.dom.minidom
+
 from subprocess import *
 from optparse import OptionParser
-import xml.dom.minidom
+
+from iocbuilder.xmlbuilder.xmlstore import Store
 
 
 # hacky hacky change linux-x86 to linux-x86_64 in RHEL6

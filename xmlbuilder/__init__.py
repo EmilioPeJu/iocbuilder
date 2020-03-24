@@ -1,1 +1,1 @@
-from .xmlbuilder import Store
+from .xmlstore import Store

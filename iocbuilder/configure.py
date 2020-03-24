@@ -1,10 +1,10 @@
 '''IOC builder configuration and initialisation.'''
 
-import os, sys
+import os
+import sys
 
-from .support import Singleton
-from . import recordnames
-
+from iocbuilder import recordnames
+from iocbuilder.support import Singleton
 
 __all__ = [
     'Configure', 'LoadVersionFile', 'ConfigureIOC', 'ConfigureTemplate',

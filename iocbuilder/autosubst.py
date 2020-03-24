@@ -1,9 +1,12 @@
 '''AutoSubstitution for scanning template files.'''
 
-from .libversion import ModuleBase, modules, PythonIdentifier
-import os, re, sys
-from . import recordset
-from .arginfo import *
+import os
+import re
+import sys
+
+from iocbuilder import recordset
+from iocbuilder.libversion import ModuleBase, modules, PythonIdentifier
+from iocbuilder.arginfo import *
 
 __all__ = ['AutoSubstitution']
 
@@ -67,11 +70,11 @@ def populate_class(cls, template_file):
                     print('***Warning: Redefining non-default macro "%s" to have '\
                     'default "%s" in "%s"' % (mtext, default, template_file), file=sys.stderr)
                     required_names = [x for x in required_names if x != mtext]
-                    optional_names = [x for x in optional_names if x != mtext]                    
+                    optional_names = [x for x in optional_names if x != mtext]
                 if mtext in default_names:
                     # if it's a default value already, check it matches
                     old_default = default_values[default_names.index(mtext)]
-                    if default != old_default: 
+                    if default != old_default:
                         print('***Warning: Cannot set macro "%s" to "%s", already '\
                         'defined with value "%s" in "%s"' % (mtext, default, \
                             old_default, template_file), file=sys.stderr)
@@ -230,5 +233,5 @@ macro_desc_re = re.compile(
     r'([^, \t]+)[ \t]*,[ \t]*' # Captures the macro name and discards comma
     r'([^\n]+' # This start the description capture and the first line
     r'(?:\n#[ \t]*[^\n \t%#][^\n]*)*)', # subsequent non-'blank' line
-    re.MULTILINE)  
+    re.MULTILINE)
 

@@ -1,7 +1,10 @@
 '''Meta data argument info support.'''
 
-import inspect, sys
-from .libversion import ModuleBase, ModuleVersion
+import inspect
+import sys
+
+from iocbuilder.libversion import ModuleBase, ModuleVersion
+
 
 __all__ = ['makeArgInfo', 'filter_dict', 'defArgInfo']
 

@@ -1,7 +1,14 @@
+import os
+import sys
+import traceback
+import time
+import xml.dom.minidom
+
 from PyQt4.QtGui import QUndoGroup
 from PyQt4.QtCore import Qt, QString, SIGNAL
-from .xmltable import Table
-import xml.dom.minidom, sys, os, traceback, time
+
+from iocbuilder.xmlbuilder.xmltable import Table
+
 
 class Store(object):
     def __init__(self, debug = False, DbOnly = False, doc = False,
@@ -54,7 +61,7 @@ class Store(object):
         to paths in release'''
         self.iocname = os.path.basename(filename).replace('.xml','')
         if filename:
-            self.build_root = os.path.dirname(os.path.abspath(filename))        
+            self.build_root = os.path.dirname(os.path.abspath(filename))
         else:
             self.build_root = os.getcwd()
         if self.debug:

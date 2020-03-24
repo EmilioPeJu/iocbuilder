@@ -1,13 +1,11 @@
 '''Xml for creating instances of templated xml files.'''
 
-from .libversion import ModuleBase
-from . import libversion
-from .autosubst import populate_class
-from . import support
-from . import dbd
-from . import arginfo
 import os
 import xml.dom.minidom
+
+from iocbuilder.libversion import ModuleBase
+from iocbuilder import arginfo, dbd, libversion, support
+from iocbuilder.autosubst import populate_class
 
 __all__ = ['Xml']
 
@@ -152,7 +150,7 @@ def constructArgDict(el, objects, classes, ident_lookup=True):
             value = value.decode('string_escape')
         elif desc.typ == float:
             # pass a string to retain formatting
-            float(value)            
+            float(value)
         else:
             value = desc.typ(value)
         # add it to the dict

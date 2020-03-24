@@ -3,10 +3,7 @@
 import os.path
 import subprocess
 
-from . import recordnames
-from . import libversion
-from . import support
-from . import paths
+from iocbuilder import libversion, paths, recordnames, support
 
 
 __all__ = ['LookupRecord', 'Substitution']

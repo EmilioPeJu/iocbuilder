@@ -1,12 +1,11 @@
 '''Support for creating fanout records.'''
 
-from .dbd import records
-from .recordbase import PP
-from . import support
+from iocbuilder import support
+from iocbuilder.dbd import records
+from iocbuilder.recordbase import PP
 
 
 __all__ = ['create_fanout', 'create_dfanout']
-
 
 
 # ----------------------------------------------------------------------------

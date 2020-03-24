@@ -1,14 +1,14 @@
 '''Implements the set of records provided by a dbd'''
 
-import os, os.path
+import os
+import os.path
 import ctypes
 
-from . import mydbstatic   # Pick up interface to EPICS dbd files
-from . import paths
-from . import arginfo
-from .support import Singleton, OrderedDict
+from iocbuilder import mydbstatic   # Pick up interface to EPICS dbd files
+from iocbuilder import arginfo, paths
 
-from .recordbase import Record
+from iocbuilder.support import Singleton, OrderedDict
+from iocbuilder.recordbase import Record
 
 
 __all__ = ['records']

@@ -7,9 +7,7 @@ import string
 import re
 import types
 
-from . import support
-import hardware
-from . import paths
+from iocbuilder import hardware, paths, support
 
 
 __all__ = [

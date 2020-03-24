@@ -1,7 +1,9 @@
 import os
 from ctypes import *
 
-import paths, platform
+from iocbuilder import paths
+
+import platform
 
 
 _FunctionList = (

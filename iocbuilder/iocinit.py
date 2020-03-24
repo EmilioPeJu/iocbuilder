@@ -27,14 +27,12 @@
 import os
 import shutil
 
-from . import support
-from .support import autosuper, quote_c_string
-from .liblist import Hardware
-from .libversion import ModuleVersion
-from .configure import TargetOS, Get_TargetOS, Get_TargetOS_dict, Call_TargetOS
-from .configure import Architecture
-from . import paths
-from . import mydbstatic
+from iocbuilder import mydbstatic, paths, support
+from iocbuilder.support import autosuper, quote_c_string
+from iocbuilder.liblist import Hardware
+from iocbuilder.libversion import ModuleVersion
+from iocbuilder.configure import (Architecture, Call_TargetOS, Get_TargetOS,
+                                  Get_TargetOS_dict, TargetOS)
 
 
 

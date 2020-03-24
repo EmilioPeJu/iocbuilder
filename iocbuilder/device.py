@@ -10,11 +10,11 @@ the Device class defined here.'''
 import os.path
 import re
 
-from .liblist import Hardware
-from . import libversion
-from .dbd import LoadDbdFile
-from .configure import Configure, Architecture
-from .support import Singleton
+from iocbuilder import libversion
+from iocbuilder.configure import Configure, Architecture
+from iocbuilder.dbd import LoadDbdFile
+from iocbuilder.liblist import Hardware
+from iocbuilder.support import Singleton
 
 
 # Here's what this module exports to the outside world
@@ -60,7 +60,7 @@ class _header:
 
 _ResourceExclusions = {
     'win32-x86': ['library'],
-    'windows-x64': ['library'],    
+    'windows-x64': ['library'],
     'none':      ['library', 'object']
 }
 # Implements a simple filter on resources against architecture: we don't check
