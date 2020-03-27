@@ -1,8 +1,12 @@
+import re
+import time
+import types
+
 from PyQt4.QtGui import QUndoStack, QUndoCommand, QColor
-from PyQt4.QtCore import QStringList, Qt, QAbstractTableModel, QMimeData, \
-    QVariant, SIGNAL, QString, QModelIndex
-import re, time, types
-from iocbuilder.xmlbuilder.commands import ChangeValueCommand, RowCommand
+from PyQt4.QtCore import (QStringList, Qt, QAbstractTableModel, QMimeData,
+    QVariant, SIGNAL, QString, QModelIndex)
+
+from xmlbuilder.commands import ChangeValueCommand, RowCommand
 
 class Table(QAbstractTableModel):
 

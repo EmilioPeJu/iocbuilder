@@ -15,7 +15,7 @@ from PyQt4.QtGui import (
 from PyQt4.QtCore import Qt, SIGNAL, SLOT, QSize, QVariant, QString, QEvent, QPoint
 from optparse import OptionParser
 
-from iocbuilder.xmlbuilder.delegates import ComboBoxDelegate
+from xmlbuilder.delegates import ComboBoxDelegate
 
 
 class TooltipMenu(QMenu):

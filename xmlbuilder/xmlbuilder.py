@@ -8,7 +8,7 @@ import xml.dom.minidom
 from subprocess import *
 from optparse import OptionParser
 
-from iocbuilder.xmlbuilder.xmlconfig import XmlConfig
+from xmlbuilder.xmlconfig import XmlConfig
 
 
 # hacky hacky change linux-x86 to linux-x86_64 in RHEL6

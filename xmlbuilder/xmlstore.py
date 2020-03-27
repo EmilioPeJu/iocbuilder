@@ -7,8 +7,8 @@ import xml.dom.minidom
 from PyQt4.QtGui import QUndoGroup
 from PyQt4.QtCore import Qt, QString, SIGNAL
 
-from iocbuilder.xmlbuilder.xmlconfig import XmlConfig
-from iocbuilder.xmlbuilder.xmltable import Table
+from xmlbuilder.xmlconfig import XmlConfig
+from xmlbuilder.xmltable import Table
 
 
 class Store(object):
