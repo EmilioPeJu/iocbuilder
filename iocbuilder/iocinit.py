@@ -99,7 +99,7 @@ class iocInit(support.Singleton):
         # to put off creating it until configure tells us to initialise.
         mydbstatic.ImportFunctions()
         ModuleVersion('EPICS_BASE', home = paths.EPICS_BASE, use_name = False)
-        from modules.EPICS_BASE import epicsBase
+        from iocbuilder.modules.EPICS_BASE import epicsBase
         epicsBase(self)
 
         # Now the architecture has been set (assuming it has), set up the
