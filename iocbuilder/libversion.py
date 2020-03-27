@@ -201,7 +201,8 @@ class ModuleVersion:
     # this class behaves exactly like its name: this ensures that sets and
     # sorted lists of modules behave predicably.
     def __hash__(self):         return hash(self.__name)
-    def __cmp__(self, other):   return cmp(self.__name, other.__name)
+    def __lt__(self, other):
+        return self.__name < other.__name
 
 
     def __CreateVersionModule(self):

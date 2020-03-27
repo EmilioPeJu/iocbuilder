@@ -39,11 +39,9 @@ def _DbdPath(file):
 # A helper object which sorts before all other objects.
 class _FIRST:
     def __hash__(self):     return id(self)
-    def __cmp__(self, other):
-        if self is other:
-            return 0
-        else:
-            return -1
+    def __lt__(self, other):
+        return self is not other
+
 _FIRST = _FIRST()
 
 
