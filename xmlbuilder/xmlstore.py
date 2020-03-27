@@ -7,6 +7,7 @@ import xml.dom.minidom
 from PyQt4.QtGui import QUndoGroup
 from PyQt4.QtCore import Qt, QString, SIGNAL
 
+from iocbuilder.xmlbuilder.xmlconfig import XmlConfig
 from iocbuilder.xmlbuilder.xmltable import Table
 
 
@@ -59,14 +60,6 @@ class Store(object):
     def New(self, filename = ""):
         '''Create a new table list by setting up ModuleVersion calls according
         to paths in release'''
-        self.iocname = os.path.basename(filename).replace('.xml','')
-        if filename:
-            self.build_root = os.path.dirname(os.path.abspath(filename))
-        else:
-            self.build_root = os.getcwd()
-        if self.debug:
-            print("IOC name: %s" % self.iocname)
-            print("Build root: %s" % self.build_root)
         # First clear up the undo stack
         for stack in self.stack.stacks():
             self.stack.removeStack(stack)
@@ -75,34 +68,11 @@ class Store(object):
         # then clear the display list
         self._tableNames = []
         self._stored_tableNames = []
-        # Now make sure there is no iocbuilder hanging around
-        for k in [ k for k in sys.modules if k.startswith('iocbuilder') ]:
-            del sys.modules[k]
-        if 'iocbuilder' in globals():
-            del(iocbuilder)
-        # now do the import and configure of iocbuilder
-        import iocbuilder
-        if self.debug:
-            print('# Creating IOC with Architecture %s' % (self.architecture))
-            if self.simarch:
-                print('# Simulation mode')
-        self.iocbuilder = iocbuilder
-        self.ioc_writer = None
-        if self.DbOnly:
-            self.ioc_writer = iocbuilder.iocwriter.DbOnlyWriter
-        elif self.doc:
-            self.ioc_writer = iocbuilder.iocwriter.DocumentationIocWriter
-        # do the moduleversion calls
-        from dls_dependency_tree import dependency_tree
-        vs = self.iocbuilder.ParseAndConfigure(self, dependency_tree)
-        # create AutoSubstitutions and moduleObjects
-        for v in vs:
-            if self.debug:
-                print('Making auto objects from %s' % v.LibPath())
-            iocbuilder.AutoSubstitution.fromModuleVersion(v)
-            iocbuilder.Xml.fromModuleVersion(v)
+        xml_config = XmlConfig(debug=self.debug, DbOnly=self.DbOnly,
+                               doc=self.doc, arch=self.architecture,
+                               simarch=self.simarch, filename=filename)
         # create our dict of classes
-        classes = iocbuilder.includeXml.createClassLookup()
+        classes = xml_config.iocbuilder.includeXml.createClassLookup()
         # now we can make our tables
         for name, o in list(classes.items()):
             # make a table object
