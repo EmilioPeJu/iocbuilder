@@ -147,7 +147,7 @@ def constructArgDict(el, objects, classes, ident_lookup=True):
             else:
                 value = False
         elif desc.typ == str:
-            value = value.decode('string_escape')
+            value = value.encode('utf-8').decode('unicode-escape')
         elif desc.typ == float:
             # pass a string to retain formatting
             float(value)

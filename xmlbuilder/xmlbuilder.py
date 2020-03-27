@@ -181,8 +181,9 @@ def get_latest_commit(repo_path):
     git_describe = 'git describe --tags --long --always'.split()
     git_log = 'git log -n 1 --pretty=format:%s'.split()
     try:
-        description = check_output(git_describe, cwd=repo_path).strip()
-        message = check_output(git_log, cwd=repo_path)
+        description = check_output(git_describe, cwd=repo_path)\
+            .decode('utf-8').strip()
+        message = check_output(git_log, cwd=repo_path).decode('utf-8')
         commit_info.append('{} "{}"'.format(description, message))
     except CalledProcessError:
         commit_info.append('No git info')
@@ -194,8 +195,8 @@ def get_file_git_status(file_list, repo_path):
     git_lstree = 'git ls-tree -r --name-only HEAD'.split()
     git_diff = 'git diff --name-only HEAD'.split()
     try:
-        tracked = check_output(git_lstree, cwd=repo_path)
-        uncommitted = check_output(git_diff, cwd=repo_path)
+        tracked = check_output(git_lstree, cwd=repo_path).decode('utf-8')
+        uncommitted = check_output(git_diff, cwd=repo_path).decode('utf-8')
         for f in file_list:
             if f not in tracked or f in uncommitted:
                 file_status.append('{} contained uncommitted changes'\

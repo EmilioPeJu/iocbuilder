@@ -79,8 +79,8 @@ class ValidateDbField:
         valid_names = []
         status = mydbstatic.dbFirstField(self.dbEntry, 0)
         while status == 0:
-            name = mydbstatic.dbGetFieldName(self.dbEntry)
-            desc = mydbstatic.dbGetPrompt(self.dbEntry)
+            name = mydbstatic.dbGetFieldName(self.dbEntry).decode('utf-8')
+            desc = mydbstatic.dbGetPrompt(self.dbEntry).decode('utf-8')
             typ = mydbstatic.dbGetFieldType(self.dbEntry)
             group = mydbstatic.dbGetPromptGroup(self.dbEntry)
             if typ in [DCT_STRING, DCT_INLINK, DCT_OUTLINK, DCT_FWDLINK]:
@@ -95,7 +95,8 @@ class ValidateDbField:
                     menu_void = mydbstatic.dbGetMenuChoices(self.dbEntry)
                     menu_p = ctypes.cast(menu_void,
                         ctypes.POINTER(ctypes.c_char_p * n_choices))
-                    ArgInfo = arginfo.Choice(desc, list(menu_p[0]))
+                    ArgInfo = arginfo.Choice(desc, [item.decode('utf-8') for
+                        item in menu_p[0]])
                 else:
                     ArgInfo = arginfo.Simple(desc, str)
             else:
@@ -141,10 +142,10 @@ class ValidateDbField:
             status = mydbstatic.dbNextField(self.dbEntry, 0)
 
         # Now see if we can write the value to it
-        message = mydbstatic.dbVerify(self.dbEntry, value)
+        message = mydbstatic.dbVerify(self.dbEntry, value.encode('utf-8'))
         assert message == None, \
-            'Can\'t write "%s" to field %s: %s' % (value, name, message)
-
+            'Can\'t write "%s" to field %s: %s' % (value, name,
+                                                   message.decode('utf-8'))
 
 
 # The same database pointer is used for all DBD files: this means that all
@@ -157,9 +158,9 @@ def LoadDbdFile(device, dbdDir, dbdfile):
     # also recorded for later use.
     curdir = os.getcwd()
     os.chdir(dbdDir)
-
     status = mydbstatic.dbReadDatabase(
-        ctypes.byref(_db), dbdfile, '.:%s/dbd' % paths.EPICS_BASE, None)
+        ctypes.byref(_db), dbdfile.encode('utf-8'),
+        ('.:%s/dbd' % paths.EPICS_BASE).encode('utf-8'), None)
     assert status == 0, 'Error reading database %s/%s (status %d)' % \
         (dbdDir, dbdfile, status)
 
@@ -171,7 +172,7 @@ def LoadDbdFile(device, dbdDir, dbdfile):
     entry = mydbstatic.dbAllocEntry(_db)
     status = mydbstatic.dbFirstRecordType(entry)
     while status == 0:
-        recordType = mydbstatic.dbGetRecordTypeName(entry)
+        recordType = mydbstatic.dbGetRecordTypeName(entry).decode('utf-8')
         if not hasattr(RecordTypes, recordType):
             validate = ValidateDbField(entry)
             RecordTypes._PublishRecordType(device, recordType, validate)

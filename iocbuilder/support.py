@@ -278,7 +278,7 @@ def msi_replace_macros(d, text):
             for k, v in list(d.items())]
         p = subprocess.Popen(args, stdout = subprocess.PIPE,
             stdin = subprocess.PIPE)
-        return p.communicate(text)[0]
+        return p.communicate(text.encode('utf-8'))[0].decode('utf-8')
     else:
         return text
 
