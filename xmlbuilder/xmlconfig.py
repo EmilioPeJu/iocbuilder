@@ -19,8 +19,8 @@ class XmlConfig(object):
         else:
             self.build_root = os.getcwd()
         if self.debug:
-            print "IOC name: %s" % self.iocname
-            print "Build root: %s" % self.build_root
+            print("IOC name: %s" % self.iocname)
+            print("Build root: %s" % self.build_root)
         self.configureIocbuilder()
 
     def configureIocbuilder(self):
@@ -32,7 +32,7 @@ class XmlConfig(object):
         # now do the import and configure of iocbuilder
         import iocbuilder
         if self.debug:
-            print '# Creating IOC with Architecture %s' % (self.architecture)
+            print('# Creating IOC with Architecture %s' % (self.architecture))
         self.iocbuilder = iocbuilder
         self.ioc_writer = None
         if self.DbOnly:
@@ -45,6 +45,6 @@ class XmlConfig(object):
         # create AutoSubstitutions and moduleObjects
         for v in vs:
             if self.debug:
-                print 'Making auto objects from %s' % v.LibPath()
+                print('Making auto objects from %s' % v.LibPath())
             iocbuilder.AutoSubstitution.fromModuleVersion(v)
             iocbuilder.Xml.fromModuleVersion(v)
