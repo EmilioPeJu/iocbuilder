@@ -82,9 +82,7 @@ class Store(object):
             # add the undo stack
             self.stack.addStack(table.stack)
             # connect its modified signal to store a timestamp
-            table.connect(table, SIGNAL(
-                'dataChanged(const QModelIndex &, const QModelIndex &)'),
-                self.setLastModified)
+            table.dataChanged.connect(self.setLastModified)
         self.setStored()
         # failure if there were no callables
         self.setLastModified()

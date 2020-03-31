@@ -327,10 +327,8 @@ class GUI(QMainWindow):
             QDockWidget.DockWidgetFloatable | QDockWidget.DockWidgetMovable)
         self.addDockWidget(Qt.LeftDockWidgetArea, self.dock1)
         # connect it to the populate method
-        self.connect(self.listView, SIGNAL('activated ( const QModelIndex & )'),
-                     self.populate)
-        self.connect(self.listView, SIGNAL('clicked ( const QModelIndex & )'),
-                     self.populate)
+        self.listView.activated.connect(self.populate)
+        self.listView.clicked.connect(self.populate)
         # dock the undoView on the left
         self.dock2 = QDockWidget(self)
         self.undoView = QUndoView(self.store.stack)
@@ -377,10 +375,8 @@ class GUI(QMainWindow):
             self.tableView.pythonCode).setShortcut('CTRL+P')
         self.tableView.codeBox = pythonCode()
         self.menuEdit.addSeparator()
-        self.menuEdit.addAction('Undo',
-            self.store.stack, SLOT('undo()')).setShortcut('CTRL+Z')
-        self.menuEdit.addAction('Redo',
-            self.store.stack, SLOT('redo()')).setShortcut('CTRL+SHIFT+Z')
+        self.menuEdit.addAction('Undo', self.store.stack.undo).setShortcut('CTRL+Z')
+        self.menuEdit.addAction('Redo', self.store.stack.redo).setShortcut('CTRL+SHIFT+Z')
         # create component menu
         self.menuComponents = self.menu.addMenu('Components')
         self.resize(QSize(1000,500))
@@ -567,8 +563,7 @@ class GUI(QMainWindow):
         self.dock1.setWindowTitle('Table: '+name)
         self.tableView.setModel(table)
         self.tableView.resizeColumnsToContents()
-        self.connect(table.stack, SIGNAL('cleanChanged(bool)'),
-                     self._setClean)
+        table.stack.cleanChanged.connect(self._setClean)
         # scroll to the stored point of the table
         if table.topLeftIndex:
             self.tableView.scrollTo(table.index(table.rowCount() - 1, table.columnCount() - 1))
@@ -608,14 +603,14 @@ class formLog(QDialog):
         formLayout.addWidget(self.scroll,1,1,1,2)
         self.btnClose = QPushButton('Close', self)
         formLayout.addWidget(self.btnClose,3,2,1,1)
-        self.connect(self.btnClose, SIGNAL('clicked ()'),self.close)
+        self.btnClose.clicked.connect(self.close)
 
 class pythonCode(formLog):
     def __init__(self,*args):
         formLog.__init__(self,"text = text.replace('.', '-')",*args)
         self.btnRun = QPushButton('Run', self)
         self.scroll.setMinimumHeight(100)
-        self.connect(self.btnRun, SIGNAL('clicked ()'),self.runCode)
+        self.btnRun.clicked.connect(self.runCode)
         self.formLayout.addWidget(self.btnRun,3,1,1,1)
         self.lab.setReadOnly(False)
         self.help = QLabel("Variables:\n\ttext: cell text\n\tcell: cell object\n")

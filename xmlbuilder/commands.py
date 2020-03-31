@@ -37,9 +37,7 @@ class ChangeValueCommand(QUndoCommand):
             # just changed this cell
             index1 = self.model.index(self.row, self.column)
             index2 = index1
-        self.model.emit(
-            SIGNAL('dataChanged(const QModelIndex &, const QModelIndex &)'),
-            index1, index2)
+        self.model.dataChanged.emit(index1, index2)
 
     def redo(self):
         self._do(self.new, self.old)
@@ -82,9 +80,7 @@ class RowCommand(QUndoCommand):
         index1 = self.model.index(self.row, 0)
         index2 = self.model.index(
             self.model.rowCount()-1, self.model.columnCount()-1)
-        self.model.emit(
-            SIGNAL('dataChanged(const QModelIndex &, const QModelIndex &)'),
-            index1, index2)
+        self.model.dataChanged.emit(index1, index2)
 
     def redo(self):
         if self.add == True:
