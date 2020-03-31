@@ -19,7 +19,7 @@ class ChangeValueCommand(QUndoCommand):
         if new.toString() == '':
             new = QVariant()
         elif new.toString() == '""':
-            new = QVariant(QString(''))
+            new = QVariant('')
 
         self.model.rows[self.row][self.column] = new
 

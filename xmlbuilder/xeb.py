@@ -72,7 +72,7 @@ class TableView(QTableView):
                 row[i] = val.replace("\n", "\\n").replace("\t", "\\t")
         rows = ['\t'.join(row) for row in data]
         cb = app.clipboard()
-        cb.setText(QString('\n'.join(rows)))
+        cb.setText('\n'.join(rows))
 
     def pythonCode(self):
         self.codeBox.parent = self
@@ -449,12 +449,12 @@ class GUI(QMainWindow):
 
     def __insertListViewItem(self, name, row = None):
         ob = self.store._tables[name].ob
-        item = QListWidgetItem(QString(name))
+        item = QListWidgetItem(name)
         doc = str(ob.__doc__)
         search = re.search(r'\n[ \t]*', doc)
         if search:
             doc = re.sub(search.group(), '\n', doc)
-        item.setToolTip(QString(str(doc)))
+        item.setToolTip(str(doc))
         if row is None:
             self.listView.addItem(item)
         else:
@@ -553,7 +553,7 @@ class GUI(QMainWindow):
                 name = sorted(self.store._tables.keys())[0]
         table = self.store.getTable(name)
         # make sure the listView is up to date
-        items = self.listView.findItems(QString(name), Qt.MatchExactly)
+        items = self.listView.findItems(name, Qt.MatchExactly)
         if items:
             self.listView.setCurrentItem(items[0])
         else:

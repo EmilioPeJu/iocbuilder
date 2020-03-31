@@ -32,7 +32,7 @@ class Table(QAbstractTableModel):
         self._defaults = {0: QVariant(False), 1: QVariant("")}
         # _optional is a list of optional columns
         self._optional = [2]
-        # _cItems is a dict of column -> QVariant QStringList items, returned
+        # _cItems is a dict of column -> QVariant String items, returned
         # to combo box
         self._cItems = {}
         # _cValues is a dict of column -> list of QVariant values, stored when
@@ -86,8 +86,7 @@ class Table(QAbstractTableModel):
             self._required.append(col)
         # if we have combo box items
         if hasattr(ob, 'labels'):
-            self._cItems[col] = QVariant(
-                QStringList([QString(str(x)) for x in ob.labels]))
+            self._cItems[col] = QVariant([str(x) for x in ob.labels])
         # if we have combo box values
         if hasattr(ob, 'values'):
             self._cValues[col] = [QVariant(x) for x in ob.values]
@@ -99,9 +98,9 @@ class Table(QAbstractTableModel):
         # convert to the requested type
         val = variant.toString()
         if typ == bool:
-            if val.toLower() == QString("true"):
+            if val.toLower() == "true":
                 return (True, True)
-            elif val.toLower() == QString("false"):
+            elif val.toLower() == "false":
                 return (False, True)
             elif "$(" in val:
                 return (val, True)
@@ -256,7 +255,7 @@ class Table(QAbstractTableModel):
             timestamp, sl = self._cachedNameList[(filt, without, upto)]
             if self._parent.lastModified() < timestamp:
                 return sl
-        sl = QStringList()
+        sl = []
         for name in self._parent.getTableNames():
             table = self._parent._tables[name]
             # if we have a filter, then make sure this table is a subclass of it
@@ -349,13 +348,13 @@ class Table(QAbstractTableModel):
             # display commented out rows as X
             elif col == 0:
                 if value.toBool():
-                    return QVariant(QString('X'))
+                    return QVariant('X')
                 else:
-                    return QVariant(QString(''))
+                    return QVariant('')
             # empty string rows should be ""
             elif not value.isNull() and self._types[col] == str and \
                     str(value.toString()) == '' and col != 1:
-                value = QVariant(QString('""'))
+                value = QVariant('""')
             return value
         # text editor
         elif role == Qt.EditRole:
@@ -371,7 +370,7 @@ class Table(QAbstractTableModel):
             # empty string rows should be ""
             elif not value.isNull() and self._types[col] == str and \
                     str(value.toString()) == '' and col != 1:
-                value = QVariant(QString('""'))
+                value = QVariant('""')
             return value
         elif role == Qt.ToolTipRole:
             # tooltip
