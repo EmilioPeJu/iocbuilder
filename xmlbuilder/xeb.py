@@ -310,7 +310,7 @@ class GUI(QMainWindow):
         #self.tableView.setAcceptDrops(True);
         #self.tableView.setDropIndicatorShown(True);
         self.tableView.verticalHeader().sectionMoved.connect(self.sectionMoved)
-        self.tableView.verticalHeader().setMovable(True)
+        self.tableView.verticalHeader().setSectionsMovable(True)
 
         self.setCentralWidget(self.tableView)
         # add a custom delegate to it
