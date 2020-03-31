@@ -1,5 +1,5 @@
-from PyQt4.QtGui import QUndoCommand
-from PyQt4.QtCore import QVariant, SIGNAL, QString, Qt
+from PyQt5.QtCore import Qt, QVariant
+from PyQt5.QtWidgets import QUndoCommand
 
 class ChangeValueCommand(QUndoCommand):
     def __init__(self, row, column, value, model):

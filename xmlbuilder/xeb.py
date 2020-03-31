@@ -6,13 +6,14 @@ import sys
 import signal
 import traceback
 
-from PyQt4.QtGui import (
-    QMainWindow, QMessageBox, QApplication, QTableView,
-    QGridLayout, QListWidget, QDockWidget, QAbstractItemView, QUndoView,
-    QMenu, QFileDialog, QInputDialog, QLineEdit, QListWidgetItem,
-    QClipboard, QDialog, QScrollArea, QTextEdit, QFont, QPushButton, QLabel,
-    QToolTip, QIcon)
-from PyQt4.QtCore import Qt, SIGNAL, SLOT, QSize, QVariant, QString, QEvent, QPoint
+from PyQt5.QtCore import Qt, QEvent, QPoint, QSize, QVariant
+from PyQt5.QtGui import QClipboard, QFont, QIcon
+from PyQt5.QtWidgets import (
+    QAbstractItemView, QAction, QApplication, QDialog, QDockWidget,
+    QFileDialog, QGridLayout, QInputDialog, QLabel, QLineEdit,
+    QListWidget, QListWidgetItem, QMainWindow, QMenu, QMessageBox,
+    QPushButton, QScrollArea, QTableView, QTextEdit, QToolTip,
+    QUndoView)
 from optparse import OptionParser
 
 from xmlbuilder.delegates import ComboBoxDelegate

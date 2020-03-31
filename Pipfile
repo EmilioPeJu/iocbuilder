@@ -8,6 +8,7 @@ verify_ssl = true
 [packages]
 dls-dependency-tree = "*"
 dls-edm = "*"
+pyqt5 = "*"
 
 [requires]
 python_version = "3.7"

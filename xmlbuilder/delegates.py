@@ -1,7 +1,8 @@
-from PyQt4.QtGui import \
-    QItemDelegate, QComboBox, QPushButton, QCompleter, QLineEdit, \
-    QBrush, QStyle, QColor, QPalette, QKeyEvent, QAbstractItemDelegate, QTextEdit, QFont
-from PyQt4.QtCore import Qt, QVariant, SIGNAL, SLOT, QEvent
+from PyQt5.QtCore import Qt, QEvent, QVariant
+from PyQt5.QtGui import QBrush, QColor, QFont, QKeyEvent, QPalette
+from PyQt5.QtWidgets import (QAbstractItemDelegate, QComboBox,
+    QCompleter, QItemDelegate, QLineEdit, QPushButton, QStyle,
+    QTextEdit)
 
 class ComboBoxDelegate(QItemDelegate):
 

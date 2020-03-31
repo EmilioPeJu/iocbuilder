@@ -4,8 +4,8 @@ import traceback
 import time
 import xml.dom.minidom
 
-from PyQt4.QtGui import QUndoGroup
-from PyQt4.QtCore import Qt, QString, SIGNAL
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QUndoGroup
 
 from xmlbuilder.xmlconfig import XmlConfig
 from xmlbuilder.xmltable import Table

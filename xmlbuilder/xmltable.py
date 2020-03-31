@@ -2,9 +2,10 @@ import re
 import time
 import types
 
-from PyQt4.QtGui import QUndoStack, QUndoCommand, QColor
-from PyQt4.QtCore import (QStringList, Qt, QAbstractTableModel, QMimeData,
-    QVariant, SIGNAL, QString, QModelIndex)
+from PyQt5.QtCore import (Qt, QAbstractTableModel, QMimeData,
+    QModelIndex, QVariant)
+from PyQt5.QtGui import QColor
+from PyQt5.QtWidgets import QUndoCommand, QUndoStack
 
 from xmlbuilder.commands import ChangeValueCommand, RowCommand
 
