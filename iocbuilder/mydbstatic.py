@@ -1,5 +1,5 @@
-import os
 from ctypes import *
+from os import access, path, R_OK
 
 from iocbuilder import paths
 
@@ -45,8 +45,15 @@ def ImportFunctions():
     bits = platform.architecture()[0]
     current_host_arch = system_map[(platform.system(), bits)]
 
-    libdb = CDLL(os.path.join(
-        paths.EPICS_BASE, 'lib', current_host_arch, 'libdbStaticHost.so'))
+    libdir = path.join(paths.EPICS_BASE, 'lib', current_host_arch)
+    libpath_r3 = path.join(libdir, 'libdbStaticHost.so')
+    libpath_r7 = path.join(libdir, 'libdbCore.so')
+    if access(libpath_r3, R_OK):
+        libdb = CDLL(libpath_r3)
+    elif access(libpath_r7, R_OK):
+        libdb = CDLL(libpath_r7)
+    else:
+        raise OSError("EPICS db library not found")
 
     for name, restype, argtypes in _FunctionList:
         function = getattr(libdb, name)
