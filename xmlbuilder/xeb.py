@@ -64,8 +64,11 @@ class TableView(QTableView):
         for _ in range(nrows):
             data.append(['\x00'] * ncols)
         for cell in selRange:
-            data[cell.row() - minrows][cell.column() - mincols] = \
-                str(cell.data(Qt.EditRole).toString())
+            if cell.data(Qt.EditRole) is None:
+                datastr = ''
+            else:
+                datastr = str(cell.data(Qt.EditRole))
+            data[cell.row() - minrows][cell.column() - mincols] = datastr
         # insert escapes
         for row in data:
             for i, val in enumerate(row):
@@ -115,7 +118,10 @@ class TableView(QTableView):
                      source = x
                      break
             cells = [x for x in selRange if x != source]
-            srcText = str(source.data().toString())
+            if source.data(Qt.EditRole) is None:
+                srcText = ''
+            else:
+                srcText = str(source.data(Qt.EditRole))
             # Fill cells across
             for cell in cells:
                 if inc:
@@ -130,7 +136,10 @@ class TableView(QTableView):
                 minrows = min([x.row() for x in cells])
                 source = [ x for x in cells if x.row() == minrows ][0]
                 cells = [ x for x in cells if x != source ]
-                srcText = str(source.data().toString())
+                if source.data(Qt.EditRole) is None:
+                    srcText = ''
+                else:
+                    srcText = str(source.data(Qt.EditRole))
                 # Fill cells down
                 for cell in cells:
                     if inc:
@@ -152,6 +161,10 @@ class TableView(QTableView):
 
     def __setCell(self, model, row, col, val):
         if val != '\x00':
+            if val == 'False':
+                val = False
+            elif val == 'True':
+                val = True
             index = model.index(row, col)
             model.setData(index, QVariant(val), Qt.EditRole)
 
@@ -540,7 +553,7 @@ class GUI(QMainWindow):
             topLeftIndex = self.tableView.indexAt(QPoint(0,0))
             self.store.getTable(self.tablename).topLeftIndex = topLeftIndex
         if index is not None:
-            name = str(index.data().toString())
+            name = str(index.data())
         if name is None:
             names = self.store.getTableNames()
             if names:
@@ -622,7 +635,7 @@ class pythonCode(formLog):
         model = self.selRange[0].model()
         model.stack.beginMacro('Run python code')
         for cell in self.selRange:
-            text = str(cell.data().toString())
+            text = str(cell.data())
             env = dict(cell = cell, text = text)
             try:
                 exec(code, env)
