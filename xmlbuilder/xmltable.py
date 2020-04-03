@@ -111,7 +111,7 @@ class Table(QAbstractTableModel):
             try:
                 val = int(variant.value())
                 return (val, True)
-            except ValueError:
+            except (TypeError, ValueError):
                 ret = False
                 pass
             return (variant.value(), ret)
