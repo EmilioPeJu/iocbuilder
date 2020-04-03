@@ -220,8 +220,8 @@ class Table(QAbstractTableModel):
             typ = self._types[index.column()]
             v, ret = self.__convert(qvar, typ)
             # col 0 must be boolean, assume any other type pasted there is
-            # intended as a comment
-            if index.column() == 0 and not ret:
+            # intended as a comment unless it is an empty string
+            if index.column() == 0 and not ret and str(qvar.value()):
                 v = True
             self.stack.push(
                 ChangeValueCommand(index.row(), index.column(), QVariant(v), self))
@@ -456,6 +456,6 @@ class Table(QAbstractTableModel):
                         (str(self._header[c.column()].value()), c.row() + 1) \
                         for c in indexes ]
                     self.stack.beginMacro('Cleared Cells: '+' '.join(celltexts))
-                self.setData(item, QVariant(), Qt.EditRole)
+                self.setData(item, QVariant(''), Qt.EditRole)
         if begun:
             self.stack.endMacro()
