@@ -1,25 +1,27 @@
-from PyQt4.QtGui import QUndoCommand
-from PyQt4.QtCore import QVariant, SIGNAL, QString, Qt
+from PyQt5.QtCore import Qt, QVariant
+from PyQt5.QtWidgets import QUndoCommand
 
 class ChangeValueCommand(QUndoCommand):
     def __init__(self, row, column, value, model):
         QUndoCommand.__init__(self)
         self.old = model.rows[row][column]
-        self.new = QVariant(value)
+        # to ensure we are working with a QVariant
+        qvar = QVariant(value)
+        self.new = qvar
         self.row = row
         self.column = column
         self.model = model
-        label = value.toString()
+        label = str(qvar.value())
         if "\n" in label or len(label) > 20:
             label = str(label).splitlines()[0].rstrip()[:18] + "..."
         self.setText('Row %s: Set %s = "%s"' %
-            (row + 1, model._header[column].toString(), label))
+            (row + 1, str(model._header[column].value()), label))
 
     def _do(self, new, old):
-        if new.toString() == '':
+        if str(new.value()) == '':
             new = QVariant()
-        elif new.toString() == '""':
-            new = QVariant(QString(''))
+        elif str(new.value()) == '""':
+            new = QVariant('')
 
         self.model.rows[self.row][self.column] = new
 
@@ -37,9 +39,7 @@ class ChangeValueCommand(QUndoCommand):
             # just changed this cell
             index1 = self.model.index(self.row, self.column)
             index2 = index1
-        self.model.emit(
-            SIGNAL('dataChanged(const QModelIndex &, const QModelIndex &)'),
-            index1, index2)
+        self.model.dataChanged.emit(index1, index2)
 
     def redo(self):
         self._do(self.new, self.old)
@@ -82,9 +82,7 @@ class RowCommand(QUndoCommand):
         index1 = self.model.index(self.row, 0)
         index2 = self.model.index(
             self.model.rowCount()-1, self.model.columnCount()-1)
-        self.model.emit(
-            SIGNAL('dataChanged(const QModelIndex &, const QModelIndex &)'),
-            index1, index2)
+        self.model.dataChanged.emit(index1, index2)
 
     def redo(self):
         if self.add == True:

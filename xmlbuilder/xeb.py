@@ -6,13 +6,14 @@ import sys
 import signal
 import traceback
 
-from PyQt4.QtGui import (
-    QMainWindow, QMessageBox, QApplication, QTableView,
-    QGridLayout, QListWidget, QDockWidget, QAbstractItemView, QUndoView,
-    QMenu, QFileDialog, QInputDialog, QLineEdit, QListWidgetItem,
-    QClipboard, QDialog, QScrollArea, QTextEdit, QFont, QPushButton, QLabel,
-    QToolTip, QIcon)
-from PyQt4.QtCore import Qt, SIGNAL, SLOT, QSize, QVariant, QString, QEvent, QPoint
+from PyQt5.QtCore import Qt, QEvent, QPoint, QSize, QVariant
+from PyQt5.QtGui import QClipboard, QFont, QIcon
+from PyQt5.QtWidgets import (
+    QAbstractItemView, QAction, QApplication, QDialog, QDockWidget,
+    QFileDialog, QGridLayout, QInputDialog, QLabel, QLineEdit,
+    QListWidget, QListWidgetItem, QMainWindow, QMenu, QMessageBox,
+    QPushButton, QScrollArea, QTableView, QTextEdit, QToolTip,
+    QUndoView)
 from optparse import OptionParser
 
 from xmlbuilder.delegates import ComboBoxDelegate
@@ -63,15 +64,18 @@ class TableView(QTableView):
         for _ in range(nrows):
             data.append(['\x00'] * ncols)
         for cell in selRange:
-            data[cell.row() - minrows][cell.column() - mincols] = \
-                str(cell.data(Qt.EditRole).toString())
+            if cell.data(Qt.EditRole) is None:
+                datastr = ''
+            else:
+                datastr = str(cell.data(Qt.EditRole))
+            data[cell.row() - minrows][cell.column() - mincols] = datastr
         # insert escapes
         for row in data:
             for i, val in enumerate(row):
                 row[i] = val.replace("\n", "\\n").replace("\t", "\\t")
         rows = ['\t'.join(row) for row in data]
         cb = app.clipboard()
-        cb.setText(QString('\n'.join(rows)))
+        cb.setText('\n'.join(rows))
 
     def pythonCode(self):
         self.codeBox.parent = self
@@ -114,7 +118,10 @@ class TableView(QTableView):
                      source = x
                      break
             cells = [x for x in selRange if x != source]
-            srcText = str(source.data().toString())
+            if source.data(Qt.EditRole) is None:
+                srcText = ''
+            else:
+                srcText = str(source.data(Qt.EditRole))
             # Fill cells across
             for cell in cells:
                 if inc:
@@ -129,7 +136,10 @@ class TableView(QTableView):
                 minrows = min([x.row() for x in cells])
                 source = [ x for x in cells if x.row() == minrows ][0]
                 cells = [ x for x in cells if x != source ]
-                srcText = str(source.data().toString())
+                if source.data(Qt.EditRole) is None:
+                    srcText = ''
+                else:
+                    srcText = str(source.data(Qt.EditRole))
                 # Fill cells down
                 for cell in cells:
                     if inc:
@@ -151,6 +161,10 @@ class TableView(QTableView):
 
     def __setCell(self, model, row, col, val):
         if val != '\x00':
+            if val == 'False':
+                val = False
+            elif val == 'True':
+                val = True
             index = model.index(row, col)
             model.setData(index, QVariant(val), Qt.EditRole)
 
@@ -309,7 +323,7 @@ class GUI(QMainWindow):
         #self.tableView.setAcceptDrops(True);
         #self.tableView.setDropIndicatorShown(True);
         self.tableView.verticalHeader().sectionMoved.connect(self.sectionMoved)
-        self.tableView.verticalHeader().setMovable(True)
+        self.tableView.verticalHeader().setSectionsMovable(True)
 
         self.setCentralWidget(self.tableView)
         # add a custom delegate to it
@@ -326,10 +340,8 @@ class GUI(QMainWindow):
             QDockWidget.DockWidgetFloatable | QDockWidget.DockWidgetMovable)
         self.addDockWidget(Qt.LeftDockWidgetArea, self.dock1)
         # connect it to the populate method
-        self.connect(self.listView, SIGNAL('activated ( const QModelIndex & )'),
-                     self.populate)
-        self.connect(self.listView, SIGNAL('clicked ( const QModelIndex & )'),
-                     self.populate)
+        self.listView.activated.connect(self.populate)
+        self.listView.clicked.connect(self.populate)
         # dock the undoView on the left
         self.dock2 = QDockWidget(self)
         self.undoView = QUndoView(self.store.stack)
@@ -376,10 +388,8 @@ class GUI(QMainWindow):
             self.tableView.pythonCode).setShortcut('CTRL+P')
         self.tableView.codeBox = pythonCode()
         self.menuEdit.addSeparator()
-        self.menuEdit.addAction('Undo',
-            self.store.stack, SLOT('undo()')).setShortcut('CTRL+Z')
-        self.menuEdit.addAction('Redo',
-            self.store.stack, SLOT('redo()')).setShortcut('CTRL+SHIFT+Z')
+        self.menuEdit.addAction('Undo', self.store.stack.undo).setShortcut('CTRL+Z')
+        self.menuEdit.addAction('Redo', self.store.stack.redo).setShortcut('CTRL+SHIFT+Z')
         # create component menu
         self.menuComponents = self.menu.addMenu('Components')
         self.resize(QSize(1000,500))
@@ -448,12 +458,12 @@ class GUI(QMainWindow):
 
     def __insertListViewItem(self, name, row = None):
         ob = self.store._tables[name].ob
-        item = QListWidgetItem(QString(name))
+        item = QListWidgetItem(name)
         doc = str(ob.__doc__)
         search = re.search(r'\n[ \t]*', doc)
         if search:
             doc = re.sub(search.group(), '\n', doc)
-        item.setToolTip(QString(str(doc)))
+        item.setToolTip(str(doc))
         if row is None:
             self.listView.addItem(item)
         else:
@@ -543,7 +553,7 @@ class GUI(QMainWindow):
             topLeftIndex = self.tableView.indexAt(QPoint(0,0))
             self.store.getTable(self.tablename).topLeftIndex = topLeftIndex
         if index is not None:
-            name = str(index.data().toString())
+            name = str(index.data())
         if name is None:
             names = self.store.getTableNames()
             if names:
@@ -552,7 +562,7 @@ class GUI(QMainWindow):
                 name = sorted(self.store._tables.keys())[0]
         table = self.store.getTable(name)
         # make sure the listView is up to date
-        items = self.listView.findItems(QString(name), Qt.MatchExactly)
+        items = self.listView.findItems(name, Qt.MatchExactly)
         if items:
             self.listView.setCurrentItem(items[0])
         else:
@@ -566,8 +576,7 @@ class GUI(QMainWindow):
         self.dock1.setWindowTitle('Table: '+name)
         self.tableView.setModel(table)
         self.tableView.resizeColumnsToContents()
-        self.connect(table.stack, SIGNAL('cleanChanged(bool)'),
-                     self._setClean)
+        table.stack.cleanChanged.connect(self._setClean)
         # scroll to the stored point of the table
         if table.topLeftIndex:
             self.tableView.scrollTo(table.index(table.rowCount() - 1, table.columnCount() - 1))
@@ -607,14 +616,14 @@ class formLog(QDialog):
         formLayout.addWidget(self.scroll,1,1,1,2)
         self.btnClose = QPushButton('Close', self)
         formLayout.addWidget(self.btnClose,3,2,1,1)
-        self.connect(self.btnClose, SIGNAL('clicked ()'),self.close)
+        self.btnClose.clicked.connect(self.close)
 
 class pythonCode(formLog):
     def __init__(self,*args):
         formLog.__init__(self,"text = text.replace('.', '-')",*args)
         self.btnRun = QPushButton('Run', self)
         self.scroll.setMinimumHeight(100)
-        self.connect(self.btnRun, SIGNAL('clicked ()'),self.runCode)
+        self.btnRun.clicked.connect(self.runCode)
         self.formLayout.addWidget(self.btnRun,3,1,1,1)
         self.lab.setReadOnly(False)
         self.help = QLabel("Variables:\n\ttext: cell text\n\tcell: cell object\n")
@@ -626,7 +635,7 @@ class pythonCode(formLog):
         model = self.selRange[0].model()
         model.stack.beginMacro('Run python code')
         for cell in self.selRange:
-            text = str(cell.data().toString())
+            text = str(cell.data())
             env = dict(cell = cell, text = text)
             try:
                 exec(code, env)

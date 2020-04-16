@@ -1,7 +1,8 @@
-from PyQt4.QtGui import \
-    QItemDelegate, QComboBox, QPushButton, QCompleter, QLineEdit, \
-    QBrush, QStyle, QColor, QPalette, QKeyEvent, QAbstractItemDelegate, QTextEdit, QFont
-from PyQt4.QtCore import Qt, QVariant, SIGNAL, SLOT, QEvent
+from PyQt5.QtCore import Qt, QEvent, QVariant
+from PyQt5.QtGui import QBrush, QColor, QFont, QKeyEvent, QPalette
+from PyQt5.QtWidgets import (QAbstractItemDelegate, QComboBox,
+    QCompleter, QItemDelegate, QLineEdit, QPushButton, QStyle,
+    QTextEdit)
 
 class ComboBoxDelegate(QItemDelegate):
 
@@ -9,21 +10,21 @@ class ComboBoxDelegate(QItemDelegate):
         values = index.data(Qt.UserRole)
         self.lastcolumn = index.column() == index.model().columnCount()-1
         if index.column() == 0:
-            index.model().setData(index, QVariant(not index.data(Qt.EditRole).toBool()), Qt.EditRole)
+            index.model().setData(index, QVariant(not index.data(Qt.EditRole)), Qt.EditRole)
             return None
         elif index.column() == 1:
             editor = QTextEdit(parent)
             editor.setFont(QFont('monospace', 10))
             editor.setAcceptRichText(False)
             return editor
-        elif values.isNull():
+        elif not values:
             editor = QLineEdit(parent)
             return editor
         else:
             editor = SpecialComboBox(parent)
             editor.delegate = self
             editor.setEditable(True)
-            editor.addItems(values.toStringList())
+            editor.addItems(values)
             return editor
 
     def eventFilter(self, editor, event):
@@ -42,14 +43,14 @@ class ComboBoxDelegate(QItemDelegate):
 
     def setEditorData(self, editor, index):
         if isinstance(editor, QComboBox):
-            i = editor.findText(index.data(Qt.EditRole).toString())
+            i = editor.findText(index.data(Qt.EditRole))
             if i > -1:
                 editor.setCurrentIndex(i)
             else:
-                editor.setEditText(index.data(Qt.EditRole).toString())
+                editor.setEditText(index.data(Qt.EditRole))
             editor.lineEdit().selectAll()
         elif isinstance(editor, QTextEdit):
-            editor.setText(index.data(Qt.EditRole).toString())
+            editor.setText(str(index.data(Qt.EditRole)))
             editor.selectAll()
         else:
             return QItemDelegate.setEditorData(self, editor, index)

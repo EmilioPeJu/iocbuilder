@@ -4,8 +4,8 @@ import traceback
 import time
 import xml.dom.minidom
 
-from PyQt4.QtGui import QUndoGroup
-from PyQt4.QtCore import Qt, QString, SIGNAL
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QUndoGroup
 
 from xmlbuilder.xmlconfig import XmlConfig
 from xmlbuilder.xmltable import Table
@@ -82,9 +82,7 @@ class Store(object):
             # add the undo stack
             self.stack.addStack(table.stack)
             # connect its modified signal to store a timestamp
-            table.connect(table, SIGNAL(
-                'dataChanged(const QModelIndex &, const QModelIndex &)'),
-                self.setLastModified)
+            table.dataChanged.connect(self.setLastModified)
         self.setStored()
         # failure if there were no callables
         self.setLastModified()
