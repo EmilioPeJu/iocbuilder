@@ -363,7 +363,7 @@ class IocDataStream(_IocDataBase):
         self.content.append(text)
 
     def _CopyFile(self, filename):
-        output = file(filename, 'w')
+        output = open(filename, 'w')
         for content in self.content:
             if callable(content):
                 content = content()
