@@ -50,16 +50,6 @@ class RecordTypes(Singleton):
 # more details.
 records = RecordTypes
 
-# Possible field types as returned by dbGetFieldType
-DCT_STRING = 0
-DCT_INTEGER = 1
-DCT_REAL = 2
-DCT_MENU = 3
-DCT_MENUFORM = 4
-DCT_INLINK = 5
-DCT_OUTLINK = 6
-DCT_FWDLINK = 7
-DCT_NOACCESS = 8
 
 # This class uses a the static database to validate whether the associated
 # record type allows a given value to be written to a given field.
@@ -83,13 +73,13 @@ class ValidateDbField:
             desc = mydbstatic.dbGetPrompt(self.dbEntry).decode('utf-8')
             typ = mydbstatic.dbGetFieldType(self.dbEntry)
             group = mydbstatic.dbGetPromptGroup(self.dbEntry)
-            if typ in [DCT_STRING, DCT_INLINK, DCT_OUTLINK, DCT_FWDLINK]:
+            if typ in mydbstatic.FIELD_STRING_TYPES:
                 ArgInfo = arginfo.Simple(desc, str)
-            elif typ in [DCT_INTEGER]:
+            elif typ in mydbstatic.FIELD_INT_TYPES:
                 ArgInfo = arginfo.Simple(desc, int)
-            elif typ in [DCT_REAL]:
+            elif typ in mydbstatic.FIELD_REAL_TYPES:
                 ArgInfo = arginfo.Simple(desc, float)
-            elif typ in [DCT_MENU, DCT_MENUFORM]:
+            elif typ in mydbstatic.FIELD_CHOICE_TYPES:
                 n_choices = mydbstatic.dbGetNMenuChoices(self.dbEntry)
                 if n_choices > 0:
                     menu_void = mydbstatic.dbGetMenuChoices(self.dbEntry)
@@ -143,7 +133,7 @@ class ValidateDbField:
 
         # Now see if we can write the value to it
         message = mydbstatic.dbVerify(self.dbEntry, value.encode('utf-8'))
-        assert message == None, \
+        assert message is None, \
             'Can\'t write "%s" to field %s: %s' % (value, name,
                                                    message.decode('utf-8'))
 
@@ -151,6 +141,7 @@ class ValidateDbField:
 # The same database pointer is used for all DBD files: this means that all
 # the DBD entries are accumulated into a single large database.
 _db = ctypes.c_void_p()
+
 
 def LoadDbdFile(device, dbdDir, dbdfile):
     # Read the specified dbd file into the current database.  This allows
@@ -165,7 +156,6 @@ def LoadDbdFile(device, dbdDir, dbdfile):
         (dbdDir, dbdfile, status)
 
     os.chdir(curdir)
-
 
     # Enumerate all the record types and build a record generator class
     # for each one that we've not seen before.
