@@ -127,7 +127,7 @@ class ValidateDbField:
         # Set the database cursor to the field
         status = mydbstatic.dbFirstField(self.dbEntry, 0)
         while status == 0:
-            if mydbstatic.dbGetFieldName(self.dbEntry) == name:
+            if mydbstatic.dbGetFieldName(self.dbEntry).decode('utf-8') == name:
                 break
             status = mydbstatic.dbNextField(self.dbEntry, 0)
 
